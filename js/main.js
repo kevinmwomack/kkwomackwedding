@@ -15,14 +15,13 @@ const CONFIG = {
   WEDDING_DATE:  _private.WEDDING_DATE || '2027-01-01T16:00:00-05:00',
   OPEN_WINDOW:   _private.OPEN_WINDOW || null,
   DAY_OF_BUTTON: _private.DAY_OF_BUTTON || null,
-  WELCOME:       _private.WELCOME || {},
 };
 
 // Detect reduced-motion preference once
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Shared helpers (also used by rsvp-upgrade.js and the examples through
-// window.WeddingSite, so there's one copy of each).
+// Shared helpers (also used by the examples through window.WeddingSite,
+// so there's one copy of each).
 function escHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -96,20 +95,18 @@ document.addEventListener('DOMContentLoaded', applySiteContent);
 // AUTH — one invitation code for the whole site.
 //
 // The code is stretched with PBKDF2 (salt + iterations from config.js) into
-// a 256-bit key. sha256(key) must match AUTH.check; the same key decrypts
-// the guest list (js/guests.js, sealed by setup/build.js). The key, not the
-// code, is remembered in localStorage so guests who only ever used their QR
-// link stay unlocked after closing the tab.
+// a 256-bit key. sha256(key) must match AUTH.check. The key, not the code,
+// is remembered in localStorage so a guest stays unlocked after closing the
+// tab.
 //
 // This is a soft gate: page text is still in the HTML for anyone who views
-// source. What it really protects is the guest list. See SECURITY.md.
+// source. See SECURITY.md.
 // ---------------------------------------------------------------------------
 const KEY_STORAGE = 'wedding_key';
 
 const enc = new TextEncoder();
 const toHex   = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 const fromHex = hex => new Uint8Array((hex.match(/../g) || []).map(h => parseInt(h, 16)));
-const fromB64 = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 
 function storageGet(k)    { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode: unlock lasts this visit */ } }
@@ -145,46 +142,13 @@ async function keyFromStorage() {
   return (await keyIsValid(raw)) ? raw : null;
 }
 
-async function openGuestList(raw) {
-  const sealed = window.GUEST_LIST_SEALED;
-  if (!sealed || !raw) return null;
-  try {
-    const key   = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
-    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromB64(sealed.iv) }, key, fromB64(sealed.data));
-    return JSON.parse(new TextDecoder().decode(plain));
-  } catch (e) {
-    console.error('Could not open the guest list:', e);
-    return null;
-  }
-}
-
-function findGuest(list, name) {
-  if (!list || !name) return null;
-  const q = name.toLowerCase().trim();
-  return list.find(g => g.name.toLowerCase().trim() === q) || null;
-}
-
-// Shared with js/rsvp-upgrade.js. The guest list arrives asynchronously
-// (decryption), possibly late (a guest unlocks from the RSVP section during
-// the open window), so the RSVP code subscribes instead of reading a global.
-const WeddingSite = (function () {
-  const listeners = [];
-  let guests;            // undefined = still working it out, null = locked
-  return {
-    invitedGuest: null,  // the guest named in a valid personal link
-    escHtml,
-    trapFocus,
-    get guests() { return guests; },
-    onGuests(fn) { listeners.push(fn); if (guests !== undefined) fn(guests); },
-    setGuests(list) { guests = list; listeners.forEach(fn => fn(list)); },
-    async unlock(password) {
-      const raw = await keyFromPassword(password);
-      if (!raw) return false;
-      this.setGuests(await openGuestList(raw));
-      return true;
-    },
-  };
-})();
+const WeddingSite = {
+  escHtml,
+  trapFocus,
+  async unlock(password) {
+    return !!(await keyFromPassword(password));
+  },
+};
 window.WeddingSite = WeddingSite;
 
 // The whole site opens without the code during CONFIG.OPEN_WINDOW (the
@@ -195,8 +159,8 @@ function inWindow(w) {
   return now >= Date.parse(w.from) && now < Date.parse(w.until);
 }
 
-// Take the code (and name) out of the address bar once they've been used,
-// so it isn't shared when a guest copies the link or takes a screenshot.
+// Take the code (and a leftover name) out of the address bar once the code
+// has been used, so it isn't shared when a guest copies the link.
 function stripInviteParams() {
   const url = new URL(window.location.href);
   if (!url.searchParams.has('pw') && !url.searchParams.has('name')) return;
@@ -208,55 +172,39 @@ function stripInviteParams() {
 // ---------------------------------------------------------------------------
 // PASSWORD GATE — every page with a #password-gate is gated; pages without
 // one (e.g. a short-link redirect) are public.
+// A correct code always opens the page. A leftover ?name= is ignored.
 // ---------------------------------------------------------------------------
 async function initPasswordGate() {
-  const gate    = document.getElementById('password-gate');
-  const params  = new URLSearchParams(window.location.search);
-  const urlName = (params.get('name') || '').trim();
-  const urlPw   = (params.get('pw')   || '').trim();
+  const gate  = document.getElementById('password-gate');
+  const urlPw = (new URLSearchParams(window.location.search).get('pw') || '').trim();
 
-  // 1. Personal / QR link (?name=...&pw=...), or a code-only link (?pw=...)
-  if (urlPw) {
-    const raw = await keyFromPassword(urlPw);
-    if (raw) {
-      stripInviteParams();
-      const list = await openGuestList(raw);
-      const guest = findGuest(list, urlName);
-      WeddingSite.invitedGuest = guest;
-      WeddingSite.setGuests(list);
-      if (urlName && gate && list) {
-        if (guest) showWelcome(guest, gate);
-        else showGateNotFound(gate);   // right code, name not on the list
-        return;
-      }
-      unlockSite(gate);
-      return;
-    }
+  // 1. A link carrying ?pw= (and maybe ?name=). Right code opens the page.
+  if (urlPw && await keyFromPassword(urlPw)) {
+    stripInviteParams();
+    unlockSite(gate);
+    return;
   }
 
   // 2. Already unlocked on this device
-  const stored = await keyFromStorage();
-  if (stored) {
-    WeddingSite.setGuests(await openGuestList(stored));
+  if (await keyFromStorage()) {
     unlockSite(gate);
     return;
   }
 
-  // 3. Wedding weekend: open without a code (the guest list stays locked)
+  // 3. Wedding weekend: open without a code. Pages without a gate are public.
   if (inWindow(CONFIG.OPEN_WINDOW) || !gate) {
-    WeddingSite.setGuests(null);
     unlockSite(gate);
     return;
   }
 
-  WeddingSite.setGuests(null);
-  showGate(gate, urlName);
+  showGate(gate);
 }
 
-function showGate(gate, pendingName) {
+function showGate(gate) {
   const form    = document.getElementById('gate-form');
   const input   = document.getElementById('gate-input');
   const errorEl = document.getElementById('gate-error');
+  if (!gate || !form || !input || !errorEl) return;
   const button  = form.querySelector('button[type="submit"]');
 
   document.body.classList.add('gate-visible');
@@ -283,15 +231,8 @@ function showGate(gate, pendingName) {
       return;
     }
 
-    // Arrived with ?name= but no (or a wrong) code: welcome them by name now
     stripInviteParams();
-    const guest = findGuest(WeddingSite.guests, pendingName);
-    if (guest) {
-      WeddingSite.invitedGuest = guest;
-      showWelcome(guest, gate);
-    } else {
-      unlockSite(gate);
-    }
+    unlockSite(gate);
   });
 }
 
@@ -302,131 +243,6 @@ function unlockSite(gate) {
   // Remove from DOM after transition to prevent tab-focus issues
   gate.addEventListener('transitionend', () => gate.remove(), { once: true });
   setTimeout(() => gate.remove(), 1000); // reduced motion: no transitionend
-}
-
-function showGateNotFound(gate) {
-  const form    = gate.querySelector('#gate-form');
-  const prompt  = gate.querySelector('.gate-prompt');
-  const errorEl = gate.querySelector('#gate-error');
-  if (form)    form.hidden   = true;
-  if (prompt)  prompt.hidden = true;
-  if (errorEl) errorEl.hidden = true;
-
-  const card = gate.querySelector('.gate-card');
-
-  const msg = document.createElement('p');
-  msg.className   = 'gate-not-found';
-  msg.textContent = "We weren't able to find your name on our guest list. Your link may have a small error. You're still welcome to enter the site and search for your name when you RSVP.";
-  card?.appendChild(msg);
-
-  const enterBtn = document.createElement('button');
-  enterBtn.type      = 'button';
-  enterBtn.className = 'gate-btn gate-btn--ghost';
-  enterBtn.textContent = 'Enter the site';
-  enterBtn.addEventListener('click', () => unlockSite(gate));
-  card?.appendChild(enterBtn);
-
-  document.body.classList.add('gate-visible');
-}
-
-// ---------------------------------------------------------------------------
-// PERSONALIZED WELCOME CARD — shown for a valid ?name=...&pw=... link.
-// Wording, schedule and buttons come from CONFIG.WELCOME; a guest with a
-// `group` in guests.js gets that group's overrides (WELCOME.groups).
-// ---------------------------------------------------------------------------
-function welcomeFor(guest) {
-  const base  = CONFIG.WELCOME || {};
-  const group = (guest.group && base.groups && base.groups[guest.group]) || {};
-  return {
-    message:  group.message  ?? base.message ?? 'Together with our families, we joyfully invite you to join us in celebrating our union.',
-    schedule: group.schedule ?? base.schedule ?? [],
-    buttons:  group.buttons  ?? base.buttons ?? [{ label: 'RSVP', href: '#rsvp', variant: 'primary' }],
-  };
-}
-
-function showWelcome(guest, gate) {
-  // Hide password gate — welcome overlay takes over
-  gate.style.display = 'none';
-  document.body.classList.remove('gate-visible');
-
-  const w = welcomeFor(guest);
-
-  const scheduleHtml = w.schedule.length ? `
-      <div class="welcome-timeline">
-        ${w.schedule.map(s => `
-        <div class="welcome-tl-slot">
-          <span class="welcome-tl-event">${escHtml(s.event)}</span>
-          <span class="welcome-tl-time">${escHtml(s.time)}</span>
-        </div>`).join('')}
-      </div>` : '';
-
-  // External links open in a new tab so guests don't lose the wedding site
-  const buttonsHtml = w.buttons.map(b => {
-    const external = /^https?:\/\//.test(b.href);
-    const attrs = external ? ' target="_blank" rel="noopener"' : '';
-    return `<a href="${escHtml(b.href)}" class="welcome-btn welcome-btn--${b.variant === 'primary' ? 'primary' : 'secondary'}"${attrs}>${escHtml(b.label)}</a>`;
-  }).join('\n        ');
-
-  const overlay = document.createElement('div');
-  overlay.id = 'welcome-overlay';
-  overlay.setAttribute('role', 'dialog');
-  overlay.setAttribute('aria-label', 'You are invited');
-  overlay.innerHTML = `
-    <div class="welcome-card">
-      <button type="button" class="welcome-close" aria-label="Close and enter site">&times;</button>
-      <p class="gate-script">${escHtml(_private.COUPLE_NAMES || '')}</p>
-      <h1 class="welcome-title">You're Invited</h1>
-      <p class="welcome-message">${escHtml(w.message)}</p>
-      <p class="welcome-name-label">Welcome,</p>
-      <p class="welcome-name" aria-live="polite"></p>
-      <p class="welcome-subtitle">${escHtml(_private.WEDDING_DATE_DISPLAY || '')}</p>
-      <p class="welcome-venue">${escHtml(_private.VENUE_NAME || '')}</p>
-      ${scheduleHtml}
-      <div class="welcome-actions">
-        ${buttonsHtml}
-      </div>
-      ${_private.DRESS_CODE ? `<p class="welcome-dresscode">Dress code: ${escHtml(_private.DRESS_CODE)}</p>` : ''}
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  // Typewriter animation for the guest's name, exactly as it is in the
-  // guest list (shortening long names read as a mistake to guests).
-  const nameEl  = overlay.querySelector('.welcome-name');
-  const display = guest.name;
-  let i = 0;
-  nameEl.textContent = '';
-  nameEl.classList.add('typing');
-
-  const type = () => {
-    if (i < display.length) {
-      nameEl.textContent += display[i++];
-      setTimeout(type, prefersReducedMotion ? 0 : 70);
-    } else {
-      nameEl.classList.remove('typing');
-    }
-  };
-  setTimeout(type, 600); // short pause before typing starts
-
-  // Dismiss overlay — optionally scroll to a target section after
-  const dismiss = (scrollTo) => {
-    overlay.classList.add('hidden');
-    const done = () => {
-      if (!overlay.isConnected) return;
-      overlay.remove();
-      if (scrollTo) {
-        const el = document.getElementById(scrollTo);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    };
-    overlay.addEventListener('transitionend', done, { once: true });
-    setTimeout(done, 1000);
-    gate.remove();
-  };
-  // CTA buttons navigate via their href — just dismiss the overlay
-  overlay.querySelectorAll('.welcome-btn').forEach(btn => btn.addEventListener('click', () => dismiss()));
-  // X button → return to hero, not RSVP
-  overlay.querySelector('.welcome-close')?.addEventListener('click', () => dismiss('hero'));
 }
 
 // ---------------------------------------------------------------------------

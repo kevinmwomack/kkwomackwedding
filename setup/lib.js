@@ -1,6 +1,5 @@
-// Shared by setup/build.js and setup/cards/render.js: reading the two
-// private source files and making a guest's personal link, so the build,
-// guests.csv and the printed QR codes can never disagree.
+// Shared by setup/build.js: reading the private source files. An optional
+// guest list can still be sealed into the build; this site does not require one.
 'use strict';
 
 const fs   = require('fs');
@@ -60,11 +59,12 @@ function loadGuests() {
   return list.map(g => Object.assign({}, g, { name: g.name.trim() }));
 }
 
-// A guest's personal link: opens the site with their welcome card and RSVP.
+// Optional guests.csv link. This page does not read ?name=; a correct code
+// opens the site either way. The plaintext code stays in the gitignored CSV.
 function inviteLink(cfg, name) {
   const base = String(cfg.SITE_URL || '').replace(/\/+$/, '');
   if (!base) return '';
-  return `${base}/?${new URLSearchParams({ name, pw: cfg.SITE_PASSWORD || '' })}#rsvp`;
+  return `${base}/?${new URLSearchParams({ name, pw: cfg.SITE_PASSWORD || '' })}#rsvp-coming`;
 }
 
 module.exports = { ROOT, fail, readSource, loadConfig, loadGuests, inviteLink };

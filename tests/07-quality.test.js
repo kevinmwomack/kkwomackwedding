@@ -4,8 +4,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { journey, check, makeSite, config, serve, newDevice, link, installAllExamples, PASSWORD } = require('./lib');
-const { fakeAppsScript } = require('./fake-apps-script');
+const { journey, check, makeSite, config, serve, newDevice, installAllExamples, PASSWORD } = require('./lib');
 
 let srv;
 async function qualitySite() {
@@ -27,17 +26,12 @@ async function axe(page) {
     .violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')}`));
 }
 
-journey('Accessibility: no axe violations on any page or RSVP state', async () => {
+journey('Accessibility: no axe violations on the gated page or example pages', async () => {
   const { url } = await qualitySite();
-  const backend = fakeAppsScript();
-  backend.post({ name: 'Alex Johnson', attending: 'yes', guestCount: '1' });
   const pw = new URLSearchParams({ pw: PASSWORD });
   const states = [
     ['gate', url, null],
-    ['welcome card', link(url, { name: 'Jane Smith and Guest', pw: PASSWORD }), p => p.waitForTimeout(3000)],
     ['home', `${url}?${pw}`, null],
-    ['RSVP form', `${url}?${pw}#rsvp`, async p => { await p.fill('#rsvp-name-input', 'jane'); await p.click('#rsvp-suggestions li'); await p.check('input[name="attending"][value="yes"]'); }],
-    ['RSVP change confirmation', `${url}?${pw}#rsvp`, async p => { await p.fill('#rsvp-name-input', 'alex'); await p.click('#rsvp-suggestions li'); await p.check('input[name="attending"][value="no"]'); await p.click('#rsvp-submit'); await p.waitForSelector('#rsvp-duplicate-confirm'); }],
     ['lightbox open', `${url}?${pw}`, async p => { await p.focus('.gallery-item >> nth=0'); await p.keyboard.press('Enter'); await p.waitForSelector('#lightbox.open'); }],
     ['our story', `${url}our-story.html?${pw}`, null],
     ['day-of program', `${url}live.html?${pw}`, null],
@@ -45,10 +39,8 @@ journey('Accessibility: no axe violations on any page or RSVP state', async () =
   ];
   const problems = [];
   for (const [label, u, steps] of states) {
-    // Before the RSVP deadline, so the form states exist; the day-of pages
-    // render the same either way
-    // (reduced motion, so axe never measures a card halfway through fading in)
-    const page = await newDevice({ backend, at: '2099-05-01T12:00:00-04:00', reducedMotion: 'reduce' });
+    // Reduced motion, so axe never measures a card halfway through fading in.
+    const page = await newDevice({ at: '2099-05-01T12:00:00-04:00', reducedMotion: 'reduce' });
     await page.goto(u); await page.waitForTimeout(900);
     if (steps) await steps(page);
     for (const v of await axe(page)) problems.push(`${label}: ${v}`);
@@ -62,9 +54,8 @@ journey('Phones: buttons and links are big enough to tap (44px)', async () => {
   const small = [];
   for (const p of ['', 'our-story.html', 'live.html', 'menu.html']) {
     await page.goto(`${url}${p}?${new URLSearchParams({ pw: PASSWORD })}`); await page.waitForTimeout(800);
-    if (p === '') { await page.fill('#rsvp-name-input', 'jane'); await page.click('#rsvp-suggestions li'); await page.check('input[name="attending"][value="yes"]'); }
     small.push(...await page.evaluate(page => Array.from(document.querySelectorAll('button, a[href], input[type="radio"] + *, select'))
-      .filter(el => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && s.visibility !== 'hidden' && !el.closest('[hidden], .rsvp-hp, #lightbox:not(.open), .skip-link'); })
+      .filter(el => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && s.visibility !== 'hidden' && !el.closest('[hidden], #lightbox:not(.open), .skip-link'); })
       // Links inside a sentence are exempt (WCAG 2.5.8 "inline" exception)
       .filter(el => !(el.tagName === 'A' && el.closest('p') && el.closest('p').textContent.trim().length > el.textContent.trim().length + 20))
       .filter(el => el.getBoundingClientRect().height < 44)
@@ -99,8 +90,8 @@ journey('Links, images and guest-facing copy', async () => {
   }
   // Built-in guest-facing strings: no em-dashes (they read as a typo on a
   // phone, and our copy style avoids them), no leftover "TODO"
-  const strings = ['js/main.js', 'js/rsvp-upgrade.js'].map(f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8'))
-    .join('\n').match(/(["'`])(?:(?!\1)[^\\\n]|\\.)*\1/g) || [];
+  const strings = fs.readFileSync(path.join(__dirname, '..', 'js/main.js'), 'utf8')
+    .match(/(["'`])(?:(?!\1)[^\\\n]|\\.)*\1/g) || [];
   strings.filter(s => /—/.test(s) && /\s/.test(s)).forEach(s => issues.push(`em-dash in guest-facing text: ${s.slice(0, 60)}`));
   check(issues.length === 0, issues.join('\n'));
 });

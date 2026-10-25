@@ -40,7 +40,7 @@
         <li><a href="#details">The Wedding</a></li>
         <li><a href="#travel">Travel</a></li>
         <li><a href="#faq">FAQ</a></li>
-        <li><a href="#rsvp" class="nav-cta">RSVP</a></li>
+        <li><a href="#rsvp-coming" class="nav-cta">RSVP</a></li>
       </ul>
     </div>
   </nav>
@@ -57,7 +57,7 @@
       <div class="hero-divider"><span></span><span class="hero-divider-icon">&#10022;</span><span></span></div>
       <p class="hero-date" data-field="weddingDateDisplay">{{Wedding Date}}</p>
       <p class="hero-location" data-field="venueName">{{Venue Name}}</p>
-      <a href="#rsvp" class="hero-btn">RSVP Now</a>
+      <a href="#rsvp-coming" class="hero-btn">RSVP Now</a>
     </div>
     <a href="#countdown" class="hero-scroll" aria-label="Scroll down">
       <span class="scroll-arrow"></span>
@@ -192,7 +192,7 @@
       <div class="faq-list">
         <details class="faq-item reveal">
           <summary>Can I bring a plus-one?</summary>
-          <p>Due to venue capacity, we're only able to accommodate the guests named on each invitation. Your invitation will state if it includes an additional guest. For any questions, please get in touch: <a href="mailto:" data-href-field="contactEmail" data-field="contactEmail">{{contact email}}</a>.</p>
+          <p>The RSVP form is coming soon. It will be the place to tell us who is coming. For any questions before then, please get in touch: <a href="mailto:" data-href-field="contactEmail" data-field="contactEmail">{{contact email}}</a>.</p>
         </details>
         <details class="faq-item reveal">
           <summary>What should I wear?</summary>
@@ -200,21 +200,19 @@
         </details>
         <details class="faq-item reveal">
           <summary>Can I change my RSVP?</summary>
-          <p>Yes. Search for your name in the RSVP form again and send your new answer. We'll show you what we have on file and ask you to confirm the change. If your plans change and you can't make it, please let us know as soon as you're able. If you run into any trouble, reach out to us at <a href="mailto:" data-href-field="contactEmail" data-field="contactEmail">{{contact email}}</a>.</p>
+          <p>The RSVP form is coming soon. Once it is available, you can send a new answer if your plans change. If you run into any trouble, reach out to us at <a href="mailto:" data-href-field="contactEmail" data-field="contactEmail">{{contact email}}</a>.</p>
         </details>
       </div>
     </div>
   </section>
 
   <!-- ===== RSVP ===== -->
-  <section id="rsvp" class="rsvp-section section-pad">
+  <section id="rsvp-coming" class="rsvp-section section-pad">
     <div class="rsvp-bg"></div>
     <div class="container container--narrow">
       <p class="section-eyebrow reveal">Join Us</p>
       <h2 class="section-title reveal">RSVP</h2>
-      <p class="section-body reveal">We cannot wait to celebrate with you! Please RSVP by <strong>{{RSVP deadline, human-readable}}</strong>.</p>
-
-      <!-- RSVP form rendered dynamically by js/rsvp-upgrade.js -->
+      <p class="section-body reveal">The RSVP form is coming soon.</p>
     </div>
   </section>
 
@@ -222,11 +220,8 @@
 
   <!-- include: footer -->
 
-  <!-- js/config.js and js/guests.js here are the versions setup/build.js
-       generates (no plaintext code, encrypted guest list). -->
+  <!-- js/config.js here is the version setup/build.js generates (no plaintext code). -->
   <script src="js/config.js" defer></script>
   <script src="js/main.js" defer></script>
-  <script src="js/guests.js" defer></script>
-  <script src="js/rsvp-upgrade.js" defer></script>
 </body>
 </html>

@@ -17,8 +17,7 @@ window.SITE_CONFIG = {
 
   // --- Published with the site (visible to anyone who opens the page source)
 
-  // Google Apps Script Web App URL for RSVPs (setup/google-apps-script.js).
-  // This ends up public; the Apps Script is written to be safe with that.
+  // Not read by this page. RSVPs will be an embedded form in a later change.
   RSVP_ENDPOINT: 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE',
 
   // The site's address, used for the QR invite links in guests.csv.
@@ -76,9 +75,8 @@ window.SITE_CONFIG = {
   // Script emails you when someone says yes.
   RSVP_VISA_QUESTION: false,
 
-  // Your own extra questions, e.g. a meal choice or shuttle seats. Each one
-  // also needs a line in TEXT_FIELDS in setup/google-apps-script.js (same
-  // key) and a column header in the Sheet. type: 'text' | 'textarea' |
+  // Extra questions the old on-site form used to render. This page does not
+  // read them. type: 'text' | 'textarea' |
   // 'select' | 'radio'. attendingOnly hides it for guests who decline.
   // Two more options: partyOnly shows it only on invitations for more than
   // one person; invitedTo: 'brunch' only to guests with that event.

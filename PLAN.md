@@ -128,7 +128,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [x] **Commit 1 — this plan.** Add it to the repo as `PLAN.md`. No code changes. It contains no invitation code, no guest names, and no email addresses.
 
-- [ ] **Commit 2 — remove what this site will not run.** Delete the on-site RSVP client, guest-list example, Apps Script, welcome-card code and its CSS, the personal-card generator, and the tests that only cover those. In `index.html`, remove the RSVP script tags and replace `<section id="rsvp">` with a section whose id is not `rsvp`, containing a Coming Soon message. A correct password always opens the page. Keep the password gate, `localStorage`, and the `ChangeMe123` build check. `npm start`: wrong code stays on the gate, right code shows Coming Soon, no missing-script errors. `npm test` passes for the journeys that remain.
+- [x] **Commit 2 — remove what this site will not run.** Delete the on-site RSVP client, guest-list example, Apps Script, welcome-card code and its CSS, the personal-card generator, and the tests that only cover those. In `index.html`, remove the RSVP script tags and replace `<section id="rsvp">` with a section whose id is not `rsvp`, containing a Coming Soon message. A correct password always opens the page. Keep the password gate, `localStorage`, and the `ChangeMe123` build check. `npm start`: wrong code stays on the gate, right code shows Coming Soon, no missing-script errors. `npm test` passes for the journeys that remain.
 
 - [ ] **First `github.io` deploy.** Gitignored `js/config.js` with a real password (not `ChangeMe123`) and placeholder copy. Set `SITE_CONFIG_JS`. Pages source is GitHub Actions. Push `main`.
 

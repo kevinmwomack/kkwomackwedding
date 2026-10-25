@@ -1,5 +1,9 @@
 # Agent guide — building a couple's site from this template
 
+This fork follows PLAN.md: no on-site RSVP, no guest list, no welcome card.
+The RSVP area says Coming Soon until a Google Form is embedded. The security
+rules below still apply.
+
 For any AI coding agent (Claude Code, Codex, Cursor, Copilot, Gemini CLI or
 another). Most of them read `AGENTS.md` automatically; if yours doesn't,
 point it at this file. Claude Code reads it through `CLAUDE.md`.

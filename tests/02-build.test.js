@@ -34,11 +34,11 @@ journey('Build: refuses the example code, a code baked into a link, duplicate gu
 });
 
 journey('Build: half-removed features are caught (RSVP without guests, gate without code)', async () => {
-  let s = makeSite('build-rsvp-no-guests', { guests: null });
-  check(/RSVP section.*no guest list/.test(s.build().output), 'RSVP section without guest list accepted');
-  s = makeSite('build-gate-no-code', { guests: null, config: config({ SITE_PASSWORD: undefined }), edit: dir => {
-    editFile(path.join(dir, 'index.html'), h => h.replace(/<section id="rsvp"[\s\S]*?<\/section>/, ''));
+  let s = makeSite('build-rsvp-no-guests', { guests: null, edit: dir => {
+    editFile(path.join(dir, 'index.html'), h => h.replace('id="rsvp-coming"', 'id="rsvp"'));
   } });
+  check(/RSVP section.*no guest list/.test(s.build().output), 'RSVP section without guest list accepted');
+  s = makeSite('build-gate-no-code', { guests: null, config: config({ SITE_PASSWORD: undefined }) });
   check(/password\s+gate/.test(s.build().output), 'gate without code accepted');
 });
 
