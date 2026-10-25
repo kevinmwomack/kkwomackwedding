@@ -1,0 +1,13 @@
+  <!-- ===== PHOTO LIGHTBOX (partials/lightbox.html; one per page, used by js/photos.js) ===== -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close lightbox">&times;</button>
+    <button type="button" class="lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
+    <div class="lightbox-img-wrap">
+      <img id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /><!-- filled in by js/photos.js -->
+    </div>
+    <button type="button" class="lightbox-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
+    <div class="lightbox-footer">
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+      <p class="lightbox-counter" id="lightbox-counter" aria-live="polite" aria-atomic="true"></p>
+    </div>
+  </div>

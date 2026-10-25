@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+  Menu & bar page for the day, linked from live.html (instead of printed
+  table menus). To use it:
+    cp examples/day-of/menu.html .     (needs css/day-of.css + js/day-of.js from live.html)
+  then fill in the {{...}}s from the venue's final event order, and add a
+  link from live.html (e.g. a program-note under Dinner: <a href="menu.html">See the menu &amp; bar &rarr;</a>).
+
+  What worked for us:
+  - Allergy key at the TOP (we moved it up from the bottom), with "labels
+    are based on the venue's descriptions; for any allergy, check with a
+    server".
+  - Bold the protein in each dish. We dropped "vegetarian" tags: dishes
+    that have meat or fish say so in their names.
+  - Dinner folds away after the speeches (data-fold-after), so late-night
+    food and the bar come first. Nothing is hidden for good.
+  - Bar hours and last call next to the bar heading.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Menu &amp; Bar · {{COUPLE_NAMES}}</title>
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/day-of.css" />
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- include: password-gate title="Menu &amp; Bar" prompt="Enter the invitation code to see the menu." -->
+
+  <main id="main-content">
+
+    <section class="menu-hero">
+      <p class="menu-hero-eyebrow" data-field="weddingDateDisplay">{{Wedding Date}}</p>
+      <h1 class="menu-hero-title">Menu &amp; Bar</h1>
+      <p class="menu-hero-sub" data-field="venueName">{{Venue Name}}</p>
+    </section>
+
+    <section class="program-section menu-page" aria-label="Menu and bar">
+      <div class="container container--narrow">
+
+        <p class="menu-back"><a href="live.html">&larr; Back to the program</a></p>
+
+        <div class="menu-key menu-key--top">
+          <p class="menu-key-nuts">{{<strong>The whole menu is nut-free</strong>, including the cake.}}</p>
+          <div class="menu-legend">
+            <span class="legend-item"><span class="diet diet-shellfish">Shellfish</span> Contains shellfish</span>
+            <span class="legend-item"><span class="diet diet-dairy">Dairy</span> Contains dairy</span>
+          </div>
+          <p class="menu-key-note">Labels are based on the venue&rsquo;s dish descriptions. For any allergy, please check with a server.</p>
+        </div>
+
+        <!-- ===== FOOD ===== -->
+        <div class="program-phase">
+          <h2 class="phase-label">Food</h2>
+          <div class="menu-card">
+
+            <!-- Folds itself away after the speeches; set the time to match live.html -->
+            <details class="menu-earlier" open
+                     data-fold-after="2027-06-12T20:30:00-04:00" data-folded-label="Dinner (served earlier)">
+              <summary><span>Dinner</span></summary>
+              <div class="menu-course">
+                <h3 class="menu-course-title">Cocktail Hour <span class="menu-course-when">Passed</span></h3>
+                <ul class="menu-list">
+                  <li><span class="menu-item">{{Dish}}</span></li>
+                  <li><span class="menu-item"><strong class="menu-protein">{{Salmon}}</strong> {{and the rest of the dish}}</span></li>
+                </ul>
+              </div>
+              <div class="menu-course">
+                <h3 class="menu-course-title">Dinner</h3>
+                <ul class="menu-list">
+                  <li><span class="menu-item">{{Dish}}</span> <span class="diet-tags"><span class="diet diet-dairy">Dairy</span></span></li>
+                  <li><span class="menu-item">{{Roast}} <strong class="menu-protein">{{chicken}}</strong> {{with...}}</span></li>
+                </ul>
+              </div>
+              <div class="menu-course">
+                <h3 class="menu-course-title">Wedding Cake <span class="menu-course-when">After the cake cutting</span></h3>
+                <ul class="menu-list">
+                  <li><span class="menu-item">{{Flavor}}</span></li>
+                </ul>
+              </div>
+            </details>
+
+            <div class="menu-course">
+              <h3 class="menu-course-title">Late Night <span class="menu-course-when">{{Around 10:00 PM}}</span></h3>
+              <ul class="menu-list">
+                <li><span class="menu-item"><strong class="menu-protein">{{Crab cakes}}</strong>, {{sauce}}</span> <span class="diet-tags"><span class="diet diet-shellfish">Shellfish</span></span></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ===== BAR ===== -->
+        <div class="program-phase">
+          <h2 class="phase-label">Bar <span class="phase-note">{{Open 5:00 to 11:00 PM &middot; last call 10:45}}</span></h2>
+          <div class="menu-card">
+            <div class="menu-course">
+              <h3 class="menu-course-title">Signature Drinks</h3>
+              <ul class="menu-list">
+                <li><span class="menu-item"><strong>{{His}}:</strong> {{Drink}}</span><span class="menu-desc">{{What's in it}}</span></li>
+                <li><span class="menu-item"><strong>{{Hers}}:</strong> {{Drink}}</span><span class="menu-desc">{{What's in it}}</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 class="menu-course-title">Spirits</h3>
+              <ul class="menu-list menu-list--inline"><li>{{Vodka}}</li><li>{{Gin}}</li><li>{{Whiskey}}</li></ul>
+            </div>
+            <div class="menu-course">
+              <h3 class="menu-course-title">Wine &amp; Beer</h3>
+              <ul class="menu-list menu-list--inline"><li>{{Red}}</li><li>{{White}}</li><li>{{Sparkling}}</li><li>{{Beers}}</li></ul>
+            </div>
+            <div class="menu-course">
+              <h3 class="menu-course-title">Alcohol-Free</h3>
+              <ul class="menu-list menu-list--inline"><li>{{Mocktails}}</li><li>Soft drinks</li><li>Juices</li><li>Water</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <p class="program-closing"><a href="live.html">&larr; Back to the program</a></p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/day-of.js" defer></script>
+</body>
+</html>

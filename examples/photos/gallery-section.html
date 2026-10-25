@@ -1,0 +1,43 @@
+<!--
+  Photo gallery section with a lightbox. Paste this into index.html where
+  the "TODO (optional): photo gallery" comment is, then:
+    cp examples/photos/photos.css css/   and add  <link rel="stylesheet" href="css/photos.css" />  after style.css
+    cp examples/photos/photos.js  js/    and add  <script src="js/photos.js" defer></script>     after js/main.js
+  Put photos in images/ (the build only publishes images/, not other folders).
+  Resize them first: a phone photo straight off the camera is 3-5 MB, and
+  the gallery loads every thumbnail. ~1600px on the long edge is plenty.
+-->
+
+  <!-- ===== GALLERY ===== -->
+  <section id="gallery" class="gallery-section section-pad">
+    <div class="container">
+      <p class="section-eyebrow reveal">Memories</p>
+      <h2 class="section-title reveal">Our Gallery</h2>
+      <div class="gallery-grid" id="gallery-grid">
+
+        <!-- Featured: full-width top photo -->
+        <div class="gallery-item gallery-item--featured reveal" data-src="images/gallery-1.jpg">
+          <img src="images/gallery-1.jpg" alt="{{Describe the photo: who, where}}" loading="lazy" />
+          <p class="gallery-caption">{{Caption · Place, Month Year}}</p>
+        </div>
+
+        <div class="gallery-item reveal" data-src="images/gallery-2.jpg">
+          <img src="images/gallery-2.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          <p class="gallery-caption">{{Caption}}</p>
+        </div>
+
+        <div class="gallery-item reveal" data-src="images/gallery-3.jpg">
+          <img src="images/gallery-3.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          <p class="gallery-caption">{{Caption}}</p>
+        </div>
+
+        <div class="gallery-item reveal" data-src="images/gallery-4.jpg">
+          <img src="images/gallery-4.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          <p class="gallery-caption">{{Caption}}</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- include: lightbox -->

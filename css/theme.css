@@ -1,0 +1,89 @@
+/* =============================================
+   theme.css — the site's colors and fonts, in one place.
+
+   The site, the example pages, the printed cards (setup/cards/), their QR
+   codes and the favicon generator all read these, so changing the look
+   means editing this file and nothing else.
+
+   Three palettes are below. The first is active; to switch, comment it
+   out and uncomment another. All three are checked for readable text
+   contrast (4.5:1 or better) on every pairing the site uses. To use the
+   couple's own colors, edit the active block, keeping the *-rgb lines in
+   step with the hex values next to them (they're the same color, written
+   as R, G, B, for see-through overlays).
+
+   What each color is for:
+     --bg / --bg-alt        page background / alternate section background
+     --primary              main brand color (links, highlights)
+     --primary-dark         dark sections, section titles, buttons on light
+     --primary-deep         the darkest tone: hero and RSVP overlays
+     --accent               decorative lines, borders, buttons on dark
+     --accent-light         small labels on dark sections
+     --accent-text          accent-colored text on light backgrounds
+     --ink / --muted        body text / secondary text
+   ============================================= */
+:root {
+  /* Palette — Midnight & Blush (default) */
+  --bg:             #fbf8f6;
+  --bg-alt:         #f3ece8;
+  --primary:        #4a5a7a;
+  --primary-dark:   #2e3a55;
+  --primary-deep:   #1b2335;
+  --accent:         #c9958e;
+  --accent-light:   #efd6d1;
+  --accent-text:    #9b4f47;
+  --ink:            #252830;
+  --muted:          #67646e;
+  --bg-rgb:           251, 248, 246;
+  --primary-rgb:       74,  90, 122;
+  --primary-deep-rgb:  27,  35,  53;
+  --accent-rgb:       201, 149, 142;
+
+  /* Palette — Terracotta & Teal
+  --bg:             #fbf7f2;
+  --bg-alt:         #f3e9df;
+  --primary:        #a0583f;
+  --primary-dark:   #6e3a29;
+  --primary-deep:   #3b1f16;
+  --accent:         #6f9a95;
+  --accent-light:   #cfe3df;
+  --accent-text:    #3d6a65;
+  --ink:            #2a2522;
+  --muted:          #6c625b;
+  --bg-rgb:           251, 247, 242;
+  --primary-rgb:      160,  88,  63;
+  --primary-deep-rgb:  59,  31,  22;
+  --accent-rgb:       111, 154, 149;
+  */
+
+  /* Palette — Greyscale (neutral, if no colors are picked yet)
+  --bg:             #f7f7f5;
+  --bg-alt:         #efefec;
+  --primary:        #707070;
+  --primary-dark:   #404040;
+  --primary-deep:   #262626;
+  --accent:         #b0aca3;
+  --accent-light:   #d6d2c8;
+  --accent-text:    #5c5850;
+  --ink:            #2c2c2c;
+  --muted:          #6b6b6b;
+  --bg-rgb:           247, 247, 245;
+  --primary-rgb:      112, 112, 112;
+  --primary-deep-rgb:  38,  38,  38;
+  --accent-rgb:       176, 172, 163;
+  */
+
+  /* Shared by every palette */
+  --white:          #ffffff;
+  --accent-border:  rgba(var(--accent-rgb), 0.3); /* dividers, card borders */
+  --color-error:    #e07878;
+  --color-success:  #a8d5a8;
+
+  /* Fonts — self-hosted in fonts/, declared in css/fonts.css (all SIL Open
+     Font License). To use other fonts: put their .woff2 files in fonts/,
+     add @font-face rules to fonts.css, and point these at the new names. */
+  --font-heading:  'Playfair Display', Georgia, serif;          /* titles, names */
+  --font-script:   'Great Vibes', cursive;                      /* the couple's names in script */
+  --font-display:  'Marcellus', 'Palatino Linotype', Georgia, serif; /* small capitals, dates, labels */
+  --font-body:     'Source Sans 3', system-ui, sans-serif;      /* everything else */
+}

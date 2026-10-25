@@ -1,0 +1,69 @@
+name: Deploy to GitHub Pages
+
+# The site's private inputs never live in git. Add two repository secrets
+# (Settings → Secrets and variables → Actions):
+#   SITE_CONFIG_JS  the full contents of your js/config.js
+#   GUESTS_JS       the full contents of your js/guests.js (leave it out if
+#                   the site has no RSVP form or personal invite links)
+# setup/build.js turns them into a _site/ with no plaintext invitation code
+# and an encrypted guest list, and only that folder is published.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # The template repo itself has no couple's config to build; only repos
+    # made from it ("Use this template") deploy.
+    if: ${{ !github.event.repository.is_template }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Without the secret there's nothing to build yet (a brand-new copy, or
+      # this template before it's marked as one): skip with a note, not a
+      # red X. Add the secret, then Actions → Run workflow.
+      - name: Build site
+        id: build
+        env:
+          SITE_CONFIG_JS: ${{ secrets.SITE_CONFIG_JS }}
+          GUESTS_JS: ${{ secrets.GUESTS_JS }}
+        run: |
+          if [ -z "$SITE_CONFIG_JS" ]; then
+            msg="Not deployed: add the SITE_CONFIG_JS repository secret (SETUP.md, section 5), then re-run this workflow."
+            echo "::warning::$msg"
+            echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node setup/build.js
+
+      - if: steps.build.outputs.skip != 'true'
+        uses: actions/configure-pages@v5
+
+      - if: steps.build.outputs.skip != 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        if: steps.build.outputs.skip != 'true'
+        uses: actions/deploy-pages@v4

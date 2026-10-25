@@ -1,0 +1,33 @@
+name: Test
+
+# Runs the journeys in tests/ (npm test) on the template repo itself, for
+# changes to the template. Repos made from the template skip it: once a
+# couple has customized index.html, some journeys (which edit the default
+# markup) no longer apply. They can run npm test locally instead.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    if: ${{ github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm test

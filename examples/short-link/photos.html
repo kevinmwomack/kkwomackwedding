@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+  A short link you control: example.com/photos → your shared photo album.
+  Print "example.com/photos" (and its QR) on table cards instead of the
+  album's own long URL. If the album moves, or you want the link to go
+  somewhere else after the wedding, change this one file; the printed
+  cards keep working.
+
+  Deliberately NOT gated: no #password-gate, so it opens for anyone with
+  the link. Only point it at something you're happy to be public.
+
+  To use: cp examples/short-link/photos.html .  and replace ALBUM_URL (3 places).
+  Same pattern for retiring a page: replace it with a redirect like this
+  one instead of deleting it, because old links and printed QR codes live on.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="refresh" content="0; url=ALBUM_URL" />
+  <title>Share your photos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script>window.location.replace('ALBUM_URL');</script>
+</head>
+<body style="font-family: system-ui, sans-serif; max-width: 32rem; margin: 15vh auto; padding: 0 16px; text-align: center;">
+  <h1>Share your photos</h1>
+  <p>Taking you to our photo album&hellip;</p>
+  <p><a href="ALBUM_URL" rel="noopener">Open the album</a></p>
+</body>
+</html>

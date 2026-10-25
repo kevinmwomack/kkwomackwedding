@@ -1,0 +1,18 @@
+# Private: the invitation code and the guest list. setup/build.js reads
+# these locally; GitHub Actions gets them from repository secrets.
+js/config.js
+js/guests.js
+guests.csv
+guests-sheet.csv
+invite-cards/
+print/
+
+# Build output
+_site/
+test-results/
+
+node_modules/
+.env
+.env~
+.DS_Store
+__pycache__/

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+  A sign (18 x 24 in, portrait): welcome sign, "share your photos" sign,
+  table card, anything printed. Render to PDF for the print shop:
+    node setup/cards/render.js page setup/cards/sign.html --qr https://example.com/photos --out print/photos-sign.pdf
+  Same fill-ins as invite.html: [data-field="CONFIG_KEY"], img[data-qr],
+  [data-site-text]. Copy this file per sign and change the wording; sizes
+  are in inches, and the PDF comes out at the card's real size. Delete the QR block if a
+  sign doesn't need one.
+  QR codes on signs: print the address as text too, and scan a test print
+  from across a room before printing the batch.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign</title>
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @page { margin: 0; }
+    body { background: #333; }
+    .card {
+      width: 18in; height: 24in; margin: 0 auto; position: relative; background: var(--bg);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 2in 1.6in;
+    }
+    .card::before { content: ''; position: absolute; inset: 0.5in; border: 3px solid var(--accent); }
+    .card::after  { content: ''; position: absolute; inset: 0.65in; border: 1px solid rgba(var(--accent-rgb), 0.45); }
+    .eyebrow { font-family: var(--font-display); font-size: 0.55in; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+    .title { font-family: var(--font-heading); font-weight: 300; font-size: 2.3in; line-height: 1; color: var(--primary-dark); margin: 0.3in 0; }
+    .names { font-family: var(--font-script); font-size: 1.4in; color: var(--accent); }
+    .date { font-family: var(--font-display); font-size: 0.5in; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.4in; color: var(--primary-dark); }
+    .qr { margin-top: 1.2in; }
+    .qr img { width: 4.5in; height: 4.5in; }
+    .qr p { font-family: var(--font-heading); font-size: 0.6in; margin-top: 0.2in; }
+    .site { font-family: var(--font-display); font-size: 0.45in; letter-spacing: 0.12em; color: var(--primary-dark); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="eyebrow">{{Welcome to the wedding of}}</p>
+    <p class="title">{{Welcome}}</p>
+    <p class="names" data-field="COUPLE_NAMES">Partner One &amp; Partner Two</p>
+    <p class="date" data-field="WEDDING_DATE_DISPLAY">June 12, 2027</p>
+    <div class="qr">
+      <img data-qr alt="" />
+      <p>{{Scan to share your photos}}</p>
+      <p class="site" data-site-text>example.com</p>
+    </div>
+  </div>
+</body>
+</html>
