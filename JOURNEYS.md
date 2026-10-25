@@ -1,112 +1,143 @@
 # User journeys
 
-The people this template has to work for, what each one is trying to do,
-and how we know it works. Journeys marked **automated** run with
-`npm test`; the rest are manual checks (they need a real phone, a real
-Google account or a real GitHub repo).
+The journeys `npm test` still runs. Names below are the `journey()` strings
+in `tests/*.test.js`. Welcome-card, on-site RSVP, Apps Script, and personal
+QR-card journeys are not in this suite.
 
 ```bash
 npm install && npx playwright install chromium   # once
-npm test                                          # every journey, about a minute
-node tests/run.js rsvp                            # only journeys whose name matches
+npm test                                          # every journey below
+node tests/run.js "Guest types"                   # journeys whose name contains that text
 ```
 
-`npm test` builds throwaway copies of the template in `test-results/`
-(gitignored), edits them the way each journey's doc says to, and drives a
-real browser against them with a fake Google Sheet. It tests the engine
-plus your current `index.html`, so if you've removed a feature on purpose
-(say, the RSVP section), the journeys for that feature will fail; run the
-rest by name, e.g. `node tests/run.js backend`. Pages you add from
-`examples/` are built and checked too, so a placeholder you haven't filled
-in yet can show up as an accessibility or broken-link failure.
+`npm test` builds throwaway copies of the site in `test-results/`
+(gitignored) and drives a real browser against them. The default page
+those copies expect is this fork: a password gate and `#rsvp-coming`.
+The extras and quality journeys copy pages in from `examples/` for that
+run only. Those pages are not wired into the site.
 
-If you change anything in `js/`, `setup/` or `css/`, run it before you
-push. If you add a feature to the template itself, add its journey here
-and a test in `tests/`.
+If you change anything in `js/`, `setup/`, or `index.html`, run `npm test`
+before you push. If you add a feature, add its journey here and a test in
+`tests/`.
+
+[LESSONS.md](LESSONS.md) is history. This fork does not extend it.
 
 ## Who builds the site
 
-**1. A couple (or friend) with no AI agent.** Manual.
-Reads README → SETUP.md, installs Node, copies the two example files,
-fills them in, `npm start`, Apps Script, two secrets, deploy. Without a
-terminal: SETUP.md's "No terminal at all?" path (GitHub web editor +
-secrets; the workflow builds). *Check:* every step names the exact file,
-menu path or command; nothing assumes an agent.
+**1. A person with no AI agent.** Manual.
+Reads README → PLAN.md → SETUP.md. Copies `js/config.example.js` to
+gitignored `js/config.js`, sets `SITE_PASSWORD` to something other than
+`ChangeMe123`, runs `npm start`, adds the `SITE_CONFIG_JS` secret, sets
+Pages to GitHub Actions, pushes `main`. *Check:* SETUP.md section 5 names
+that secret and warns that "Deploy from a branch" is the wrong source.
 
-**2. Someone using an AI agent other than Claude** (Codex, Cursor,
-Copilot, Gemini CLI). Manual.
-The agent reads `AGENTS.md` (Claude Code reads the same file through
-`CLAUDE.md`). *Check:* the question lists, build order and security rules
-are in `AGENTS.md`; no instruction depends on a Claude-only feature.
+**2. An AI agent other than Claude** (Codex, Cursor, Copilot, Gemini CLI).
+Manual. The agent reads `AGENTS.md` and `PLAN.md`. *Check:* the security
+rules and the "leave these out" list are in `AGENTS.md`. No instruction
+tells the agent to add a guest list or an Apps Script.
 
-**3. Someone using Claude Code.** Manual. Same as 2, through the
-`@AGENTS.md` import in `CLAUDE.md`.
+**3. Claude Code.** Manual. Same as 2, through the `@AGENTS.md` import in
+`CLAUDE.md`.
 
-## What the couple wants
+## Automated: guests on the page
 
-| Journey | Doc | Verified by |
-|---|---|---|
-| **4. The full site:** code, personal QR invitations, RSVP form, welcome card | SETUP.md | automated: "Guest types the code…", "Guest scans their QR…", "Guest changes their mind…" |
-| **5. Another RSVP service** (or none): no guest list, a button to their RSVP page | CUSTOMIZING.md → No RSVP form | automated: "Couple uses another RSVP service…"; the build refuses a half-removed RSVP |
-| **6. A fully public site:** no code, no guest list | CUSTOMIZING.md → No password | automated: "Couple wants a fully public site…"; the build refuses a gate without a code |
-| **7. Public site, private guest list:** only the RSVP asks for the code | CUSTOMIZING.md → No password, option 2 | automated: "…only the RSVP asks for the code" |
-| **8. No personal invitations:** guests type the code and search | CUSTOMIZING.md | covered by "Guest types the code…" and the search steps in "Guest changes their mind…" |
-| **9. A stripped-down page:** no countdown, travel, registry, FAQ | CUSTOMIZING.md → No countdown… | automated: "Couple strips the page down…" |
-| **10. Their own RSVP question** (a meal choice, shuttle seats) | CUSTOMIZING.md → Your own RSVP question | automated: "Couple adds a required meal question…" (front end) and "…one TEXT_FIELDS line" (backend) |
-| **10b. A brunch for some guests, plus-one names, add to calendar** | CUSTOMIZING.md → Other events, Plus-one names | automated: "Couple has a brunch for some guests…"; the build refuses events without a time zone |
-| **11. Different wording for guests who can't travel** | config.example.js `WELCOME.groups` | automated: "Guest with a typo in their link…" (group welcome) |
-| **12. A new fact on the page, or a private per-guest detail** | CUSTOMIZING.md → Where things go | automated: "Couple shows a new fact anywhere with data-field…" |
-| **13. Every extra:** Our Story, wedding party, gallery, gifts, day-of program, menu, a brunch page, a short link | examples/ | automated: "Couple adds every extra…" (installs each as its header says) |
-| **14. Printed invitations, a livestream-only card, a spare, a sign** | CUSTOMIZING.md → Printed things | automated: "Couple makes invitations…"; manual: print one and scan it with two phones |
-| **15. The wedding weekend:** site opens without the code, Today's Program button | config.example.js `OPEN_WINDOW`, `DAY_OF_BUTTON` | automated: "Wedding weekend…" and the day-of steps in "Couple adds every extra…" |
-| **16. After the wedding:** thank-you page, close RSVPs, clean up data | examples/after-the-wedding | manual |
+`tests/03-guests.test.js`
 
-## What guests do
+| Journey |
+|---|
+| Guest types the code: wrong, then right; stays unlocked after closing the tab |
+| A link with ?name= and the right code opens the page and strips those params |
+| Guest on a small phone: no sideways scrolling |
+| Wedding weekend: everything opens without the code; Today's Program button |
 
-| Journey | Verified by |
+A wrong code stays on the gate. A right code opens the page, shows Coming
+Soon in `#rsvp-coming`, and stores a key in `localStorage` under
+`wedding_key`. A `?name=` and `?pw=` link opens the page and strips those
+parameters. The weekend journey sets `OPEN_WINDOW` and `DAY_OF_BUTTON`.
+
+## Automated: choices that still apply
+
+`tests/04-couple-choices.test.js`
+
+| Journey |
+|---|
+| Couple uses another RSVP service: no guest list, a button to their RSVP page |
+| Couple wants a fully public site: no code, no guest list, no RSVP form |
+| Couple strips the page down: no countdown, travel, registry or FAQ |
+| Couple shows a new fact anywhere with data-field |
+| Couple has a brunch: calendar files, Google links, and a map link |
+
+The other-service journey replaces `#rsvp-coming` with `#rsvp-elsewhere`
+and an external link. The public-site journey removes the gate and
+`SITE_PASSWORD`. The brunch journey checks `wedding.ics`, `brunch.ics`,
+the Google Calendar link, and the map link built from the address.
+
+## Automated: extras, installed only inside the test
+
+`tests/05-extras.test.js`
+
+| Journey |
+|---|
+| Couple adds every extra: Our Story + wedding party, gallery, gifts, day-of, menu, brunch page, short link |
+
+Gallery, gifts, and day-of stay in `examples/` on this fork. This journey
+copies them in, builds, and checks them. It is not a claim that those
+pages are already on the site.
+
+## Automated: quality
+
+`tests/07-quality.test.js`
+
+| Journey |
+|---|
+| Accessibility: no axe violations on the gated page or example pages |
+| Phones: buttons and links are big enough to tap (44px) |
+| Reduced motion: everything is visible straight away, nothing animates |
+| Links, images and guest-facing copy |
+
+The accessibility and tap-target journeys also open example pages after
+installing them. Links inside a sentence are exempt from the 44px check.
+The copy journey checks `rel="noopener"` on new-tab links, `alt` on
+images, `lang`, and `noindex`.
+
+## Automated: build
+
+`tests/02-build.test.js`
+
+| Journey |
+|---|
+| Build: published files hold no code, no guest names, no private files |
+| Build: refuses the example code, a code baked into a link, duplicate guests |
+| Build: half-removed features are caught (RSVP without guests, gate without code) |
+| Build: CI path reads secrets, not files; default PBKDF2 strength |
+| Build: shared markup comes from partials; a misspelled include is caught |
+| Build: an event without a time zone, or with a bad key, is refused |
+
+These are the build's safety checks. The example password `ChangeMe123`
+must still be refused. A gate with no password must still fail. Renaming
+`#rsvp-coming` to `id="rsvp"` must still fail. The CI journey checks that
+the build reads `SITE_CONFIG_JS` from the environment and that the default
+PBKDF2 iteration count is 310000. This fork's deploy sets `SITE_CONFIG_JS`
+only.
+
+Some of these journeys still pass a guest-list fixture into the build to
+prove published files do not leak names and that a duplicate name is
+refused. That fixture lives inside the test. Setup for this fork does not
+add `js/guests.js`.
+
+## Manual checks that still apply
+
+| Check | How |
 |---|---|
-| Types the code (wrong, then right); comes back later without retyping | automated |
-| Scans their QR: welcome card with their full name; the code leaves the address bar | automated |
-| RSVPs yes with a `+` phone number; it's stored as text | automated (browser + backend) |
-| Changes their mind; cancelling keeps the phone number we need for the livestream | automated |
-| Has a typo in their link, or isn't on the list | automated (never locked out) |
-| Uses a 320px phone | automated (no sideways scroll on every page) |
-| Replies after the deadline | automated (sees how to reach the couple) |
-| Uses a real iPhone and a real Android phone | manual: inputs don't zoom, QR scans, keyboard behaves |
-
-## Quality (every page and RSVP state, every example installed)
-
-| Check | Verified by |
-|---|---|
-| No accessibility violations (axe: WCAG 2.1 AA + best practices) | automated: "Accessibility: no axe violations…" |
-| Buttons and links at least 44px tall on phones (links inside sentences exempt) | automated: "Phones: buttons and links are big enough to tap" |
-| With reduced motion, nothing is left faded out | automated: "Reduced motion…" |
-| New-tab links have `rel="noopener"`, images have `alt`, pages have `lang` and `noindex`, no em-dashes in built-in guest copy | automated: "Links, images and guest-facing copy" |
-| Screen reader pass (VoiceOver, TalkBack) | manual |
-
-## Strangers and mistakes
-
-| Journey | Verified by |
-|---|---|
-| Downloads every published file looking for the code or guest names | automated: "Build: published files hold no code, no guest names…" |
-| POSTs a guest's name to the public RSVP endpoint | automated: learns attending yes/no and a count, nothing private |
-| Sends a formula as a "name", an oversized note, or bot spam | automated |
-| A couple commits the code in a link, keeps the example code, or lists a guest twice | automated: the build refuses each |
-| A couple forgets to deploy a new Apps Script version | manual: SETUP.md QA checklist against the live endpoint |
-
-## Keeping it running
-
-| Journey | Doc |
-|---|---|
-| Add or rename a guest after invitations went out | CUSTOMIZING.md → Changing things after launch |
-| Change a wedding fact | same |
-| The code leaked | same, and SECURITY.md |
-| Edit the Apps Script | same (new version, every time) |
+| Real phone | Inputs do not zoom, the page does not scroll sideways, the gate and Coming Soon read clearly |
+| Screen reader (VoiceOver, TalkBack) | Gate, headings, and the Coming Soon section |
+| Live site after deploy | SETUP.md section 6 |
+| Change a wedding fact | Edit `js/config.js`, update `SITE_CONFIG_JS`, re-run the workflow |
+| The code leaked | Change `SITE_PASSWORD`, update the secret, redeploy. Everyone is signed out. |
 
 ## Improving the template itself
 
 1. Keep it generic: placeholder names only, never a real couple's details,
-   in code, docs, commits or PRs.
+   in code, docs, commits, or PRs.
 2. Add or update the journey here and its test in `tests/`.
 3. `npm test`, then look at the pages you touched at 320px.
-4. Update LESSONS.md if the change came from something that went wrong.

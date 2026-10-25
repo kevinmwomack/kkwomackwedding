@@ -110,6 +110,8 @@ A public repo is free. GitHub Pages from a private repo needs a paid plan. The i
 
 `npm start` builds `_site/` and serves it on port 3000. That is the iteration loop. Preview the built site, not the raw files. The raw folder has no generated key check and will not unlock.
 
+Creating `js/config.js` with a password other than `ChangeMe123` and running `npm start` is a local check. That file is gitignored. It is not a commit, and it is not the `github.io` deploy below.
+
 One repository has one GitHub Pages site. The workflow deploys only `main`, into that single site. A `test` branch does not get its own `github.io` address. Pointing the workflow at `test` as well would publish over the same URL. Reserving `main` for a future custom domain and `test` for `github.io` does not work: the custom domain and the `github.io` URL are two names for whatever was deployed last, and GitHub redirects the default host to the custom domain once it is set.
 
 Use `main` for the site. Use `github.io` until a domain is purchased, then attach the domain to that same deployment. Do not add a long-lived preview branch.
@@ -129,6 +131,8 @@ Check these off in `PLAN.md` as each commit lands.
 - [x] **Commit 1 — this plan.** Add it to the repo as `PLAN.md`. No code changes. It contains no invitation code, no guest names, and no email addresses.
 
 - [x] **Commit 2 — remove what this site will not run.** Delete the on-site RSVP client, guest-list example, Apps Script, welcome-card code and its CSS, the personal-card generator, and the tests that only cover those. In `index.html`, remove the RSVP script tags and replace `<section id="rsvp">` with a section whose id is not `rsvp`, containing a Coming Soon message. A correct password always opens the page. Keep the password gate, `localStorage`, and the `ChangeMe123` build check. `npm start`: wrong code stays on the gate, right code shows Coming Soon, no missing-script errors. `npm test` passes for the journeys that remain.
+
+- [x] **Commit 3 — point the docs at this fork.** Rewrite `AGENTS.md`, `SETUP.md`, `README.md`, `CUSTOMIZING.md`, and `JOURNEYS.md` so a later session follows the password gate and `#rsvp-coming`, and does not rebuild the guest list, welcome card, Apps Script, or personal invitation cards. `js/config.example.js` keeps `SITE_PASSWORD` as `ChangeMe123`. Creating gitignored `js/config.js` with a different password and running `npm start` is a local check, not a commit.
 
 - [ ] **First `github.io` deploy.** Gitignored `js/config.js` with a real password (not `ChangeMe123`) and placeholder copy. Set `SITE_CONFIG_JS`. Pages source is GitHub Actions. Push `main`.
 
