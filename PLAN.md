@@ -1,6 +1,6 @@
 # Wedding site implementation plan
 
-Status, 25 October 2026: the design is settled. Wedding-specific copy, the real form embed URL, the invitation password, and whether to buy a domain now are still open. None of those block the first code change.
+Status, 25 October 2026: the first version is live at `https://kevinmwomack.github.io/kkwomackwedding/` and matches a local `npm start`. The next session is the design and the wedding copy. The real form embed URL, the invitation password guests will use, and whether to buy a domain are still open.
 
 This file replaces `wedding-site-plan.md`. That earlier plan had the right destination and the wrong steps for this checkout.
 
@@ -20,14 +20,16 @@ One password-gated invitation page. Wedding facts live on the site. Guest respon
 
 ## How this template actually works
 
-Checked against a fresh template on `main`, with no couple-specific commits.
+Checked against the template, then updated for this fork.
 
 - GitHub Pages runs `.github/workflows/deploy.yml` on push to `main` (and on a manual run). It builds `_site/` and publishes only that folder. The workflow runs only when the repo is not still marked as a template. Without `SITE_CONFIG_JS` it skips the deploy with a warning.
+- This site is not built by Jekyll. `setup/build.js` produces `_site/`, and the workflow publishes that folder. An empty `.nojekyll` at the repo root is copied into `_site/` so Pages does not run Jekyll on the artifact.
+- GitHub never shows a saved Actions secret. The pencil on `SITE_CONFIG_JS` opens a blank box even when the secret is set. The blank box does not mean the secret is empty. Saving that form without pasting a complete new `js/config.js` replaces the working secret with nothing, and the next build skips. Edit the local file, check it with `npm start`, paste the whole file into the secret, then re-run the workflow.
 - The build turns `SITE_PASSWORD` into a PBKDF2 check (`AUTH.salt`, `AUTH.iterations`, `AUTH.check`, 310,000 iterations by default) and fails if the plaintext code appears in the output. The browser stores the derived key in `localStorage` under `wedding_key`. There is no `VALID_HASHES` list and no `sessionStorage` unlock.
 - The gate is a courtesy. The HTML is readable without the code. Do not put a home address or a gift-account number in the page.
 - The directions link is already built from `VENUE_NAME` plus `VENUE_ADDRESS`. `data-field` only sets text. An iframe `src` needs its own assignment and must not go through `innerHTML`.
 - `<section id="rsvp">` with no guest list fails the build (`setup/build.js`). `CUSTOMIZING.md` says to use a different id. The documented example is `rsvp-elsewhere`.
-- A correct `?pw=` with a `?name=` still looks up the guest list. An empty list is truthy, so a stray name in the URL would show “not on the list” instead of opening the page. Removing the welcome card means removing that branch in `initPasswordGate()`.
+- A leftover `?name=` on the URL is ignored. A correct password always opens the page. The welcome-card branch that used to look up a guest list was removed with the card.
 - The active palette in `css/theme.css` is Midnight & Blush. `CLAUDE.md` only imports `AGENTS.md`.
 
 ## Google Forms
@@ -134,7 +136,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [x] **Commit 3 — point the docs at this fork.** Rewrite `AGENTS.md`, `SETUP.md`, `README.md`, `CUSTOMIZING.md`, and `JOURNEYS.md` so a later session follows the password gate and `#rsvp-coming`, and does not rebuild the guest list, welcome card, Apps Script, or personal invitation cards. `js/config.example.js` keeps `SITE_PASSWORD` as `ChangeMe123`. Creating gitignored `js/config.js` with a different password and running `npm start` is a local check, not a commit.
 
-- [ ] **First `github.io` deploy.** Gitignored `js/config.js` with a real password (not `ChangeMe123`) and placeholder copy. Set `SITE_CONFIG_JS`. Pages source is GitHub Actions. Push `main`.
+- [x] **First `github.io` deploy.** Gitignored `js/config.js` with a real password (not `ChangeMe123`) and placeholder copy. `SITE_CONFIG_JS` is set. Pages source is GitHub Actions. The Actions token cannot create the Pages site (`Resource not accessible by integration` on `enablement: true`). The owner turned Pages on once under Settings → Pages → GitHub Actions, then re-ran the workflow. The live site matches `npm start`.
 
 - [ ] **Guest-facing Google Form,** outside GitHub. Settings from the Google Forms section above. Swap Coming Soon for the embed in a later commit, then check the iframe on a phone.
 

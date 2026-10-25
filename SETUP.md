@@ -115,8 +115,10 @@ is not part of the deploy in section 5.
 
    Update this secret whenever you change `js/config.js` locally, then
    re-run the workflow (Actions → Deploy to GitHub Pages → Run workflow).
-   A run before the `SITE_CONFIG_JS` secret exists skips publishing, with
-   a warning saying so.
+   GitHub does not show the saved value. The edit box is blank even when
+   the secret is set. Paste a complete new copy of `js/config.js` before
+   saving. Saving the blank box clears the secret, and the next run skips
+   the deploy. A run before the secret exists also skips, with a warning.
 3. Settings → Pages → Build and deployment → Source: **GitHub Actions**.
    (Not "Deploy from a branch": that would serve the raw repo and spawns a
    legacy build that fails.)
