@@ -5,14 +5,17 @@ const fs = require('fs');
 const path = require('path');
 const { journey, check, makeSite, config, serve, newDevice, noProblems, link, editFile, PASSWORD } = require('./lib');
 
-// Drop the Coming Soon block and the links that point at it.
+// Drop the RSVP page and the links that point at it. A replacement keeps
+// the page and swaps the form block for something else.
 function removeRsvp(dir, replacement = '') {
   editFile(path.join(dir, 'index.html'), h => h
-    .replace(/  <!-- ===== RSVP ===== -->\s*<section id="rsvp-coming"[\s\S]*?<\/section>/, replacement)
-    .replace(/\s*<li><a href="#rsvp-coming" class="nav-cta">RSVP<\/a><\/li>/, '')
-    .replace(/\s*<a href="#rsvp-coming" class="hero-btn">RSVP Now<\/a>/, ''));
+    .replace(/\s*<li><a href="rsvp.html" class="nav-cta">RSVP<\/a><\/li>/, '')
+    .replace(/\s*<a href="rsvp.html" class="hero-btn">RSVP Now<\/a>/, ''));
+  const rsvp = path.join(dir, 'rsvp.html');
+  if (!replacement) { fs.rmSync(rsvp, { force: true }); return; }
+  editFile(rsvp, h => h.replace(/  <!-- ===== RSVP ===== -->\s*<section id="rsvp-coming"[\s\S]*?<\/section>/, replacement));
 }
-// A public page: delete the gate's include line. A short-link page has none.
+// A public page: delete the gate's include line.
 function removeGates(dir) {
   for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html'))) {
     if (!fs.readFileSync(path.join(dir, f), 'utf8').includes('<!-- include: password-gate')) continue;
@@ -35,10 +38,10 @@ journey('Couple uses another RSVP service: no guest list, a button to their RSVP
       <a href="https://your-rsvp-service.example" class="hero-btn" target="_blank" rel="noopener">RSVP here</a>
     </div>
   </section>`;
-  const site = makeSite('choice-no-rsvp', { guests: null, config: config({ RSVP_ENDPOINT: undefined }), edit: dir => removeRsvp(dir, button) });
+  const site = makeSite('choice-no-rsvp', { edit: dir => removeRsvp(dir, button) });
   await withSite(site, async url => {
     const page = await newDevice();
-    await page.goto(url);
+    await page.goto(url + 'rsvp.html');
     await page.fill('#gate-input', PASSWORD); await page.click('.gate-btn');
     await page.waitForSelector('#password-gate', { state: 'detached' });
     check(await page.isVisible('a[href="https://your-rsvp-service.example"]'), 'external RSVP button');
@@ -48,7 +51,7 @@ journey('Couple uses another RSVP service: no guest list, a button to their RSVP
 });
 
 journey('Couple wants a fully public site: no code, no guest list, no RSVP form', async () => {
-  const site = makeSite('choice-public', { guests: null, config: config({ SITE_PASSWORD: undefined, RSVP_ENDPOINT: undefined }), edit: dir => { removeRsvp(dir); removeGates(dir); } });
+  const site = makeSite('choice-public', { config: config({ SITE_PASSWORD: undefined }), edit: dir => { removeRsvp(dir); removeGates(dir); } });
   await withSite(site, async url => {
     check(!fs.readFileSync(site.file('_site/js/config.js'), 'utf8').includes('"AUTH"'), 'no key check published');
     const page = await newDevice();
@@ -70,7 +73,10 @@ journey('Couple strips the page down: no countdown, travel, registry or FAQ', as
     const page = await newDevice();
     await page.goto(link(url, { pw: PASSWORD }));
     await page.waitForSelector('#password-gate', { state: 'detached' });
-    check(!(await page.$('#countdown')) && /coming soon/i.test(await page.textContent('#rsvp-coming')), 'sections gone, coming soon remains');
+    check(!(await page.$('#countdown')), 'sections gone');
+    await page.goto(url + 'rsvp.html');
+    await page.waitForSelector('#password-gate', { state: 'detached' });
+    check(await page.$('#rsvp-form') && /docs\.google\.com\/forms/.test(await page.getAttribute('#rsvp-form', 'src')), 'form remains on the RSVP page');
     noProblems(page);
   });
 });
@@ -78,7 +84,6 @@ journey('Couple strips the page down: no countdown, travel, registry or FAQ', as
 journey('Couple shows a new fact anywhere with data-field', async () => {
   const site = makeSite('choice-data-field', {
     config: config({ BRUNCH_TIME: '11:30 AM' }),
-    guests: null,
     edit: dir => editFile(path.join(dir, 'index.html'), h => h.replace('<h3>Ceremony</h3>', '<h3>Ceremony</h3><p id="brunch" data-field="BRUNCH_TIME">{{time}}</p>')),
   });
   await withSite(site, async url => {
@@ -95,7 +100,6 @@ journey('Couple has a brunch: calendar files, Google links, and a map link', asy
       VENUE_ADDRESS: '1 Glass Lane, Springfield', WEDDING_END: '2099-06-12T23:00:00-04:00',
       EVENTS: [{ key: 'brunch', title: 'Sunday Brunch', start: '2099-06-13T11:30:00-04:00', end: '2099-06-13T13:30:00-04:00', location: 'The Garden Room, Springfield' }],
     }),
-    guests: null,
   });
   await withSite(site, async url => {
     const wedding = fs.readFileSync(site.file('_site/wedding.ics'), 'utf8');

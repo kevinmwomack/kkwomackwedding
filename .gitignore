@@ -1,6 +1,9 @@
-# Private: the invitation code and the guest list. setup/build.js reads
-# these locally; GitHub Actions gets them from repository secrets.
+# Private: the invitation code. setup/build.js reads js/config.js locally;
+# GitHub Actions gets it from the SITE_CONFIG_JS secret.
 js/config.js
+
+# Leftovers from the template this fork started from. The build does not
+# read them. They stay ignored so a stray copy is not committed.
 js/guests.js
 guests.csv
 guests-sheet.csv

@@ -5,16 +5,20 @@ in `tests/*.test.js`. Welcome-card, on-site RSVP, Apps Script, and personal
 QR-card journeys are not in this suite.
 
 ```bash
-npm install && npx playwright install chromium   # once
-npm test                                          # every journey below
-node tests/run.js "Guest types"                   # journeys whose name contains that text
+npm install                         # once: packages from package.json
+npm run browsers                    # once per machine, from your own terminal
+npm test                            # every journey below
+node tests/run.js "Guest types"     # journeys whose name contains that text
 ```
+
+`npm install` does not download the browser. Playwright keeps Chromium in
+the user cache for the terminal where you installed it. `npm start` and
+the GitHub Pages build never launch it.
 
 `npm test` builds throwaway copies of the site in `test-results/`
 (gitignored) and drives a real browser against them. The default page
-those copies expect is this fork: a password gate and `#rsvp-coming`.
-The extras and quality journeys copy pages in from `examples/` for that
-run only. Those pages are not wired into the site.
+those copies expect is this fork: a password gate, a home page, and
+`rsvp.html` with `#rsvp-coming`.
 
 If you change anything in `js/`, `setup/`, or `index.html`, run `npm test`
 before you push. If you add a feature, add its journey here and a test in
@@ -50,10 +54,12 @@ tells the agent to add a guest list or an Apps Script.
 | Guest on a small phone: no sideways scrolling |
 | Wedding weekend: everything opens without the code; Today's Program button |
 
-A wrong code stays on the gate. A right code opens the page, shows Coming
-Soon in `#rsvp-coming`, and stores a key in `localStorage` under
-`wedding_key`. A `?name=` and `?pw=` link opens the page and strips those
-parameters. The weekend journey sets `OPEN_WINDOW` and `DAY_OF_BUTTON`.
+A wrong code stays on the gate. A right code opens the home page, which
+has no RSVP section. The same unlock opens `rsvp.html`, which embeds the
+form from `RSVP_FORM_URL` in `#rsvp-coming`, and stores a key in
+`localStorage` under `wedding_key`. A `?name=` and `?pw=` link opens the
+RSVP page and strips those parameters. The weekend journey sets
+`OPEN_WINDOW` and `DAY_OF_BUTTON`.
 
 ## Automated: choices that still apply
 
@@ -67,22 +73,11 @@ parameters. The weekend journey sets `OPEN_WINDOW` and `DAY_OF_BUTTON`.
 | Couple shows a new fact anywhere with data-field |
 | Couple has a brunch: calendar files, Google links, and a map link |
 
-The other-service journey replaces `#rsvp-coming` with `#rsvp-elsewhere`
-and an external link. The public-site journey removes the gate and
-`SITE_PASSWORD`. The brunch journey checks `wedding.ics`, `brunch.ics`,
-the Google Calendar link, and the map link built from the address.
-
-## Automated: extras, installed only inside the test
-
-`tests/05-extras.test.js`
-
-| Journey |
-|---|
-| Couple adds every extra: Our Story + wedding party, gallery, gifts, day-of, menu, brunch page, short link |
-
-Gallery, gifts, and day-of stay in `examples/` on this fork. This journey
-copies them in, builds, and checks them. It is not a claim that those
-pages are already on the site.
+The other-service journey replaces `#rsvp-coming` on `rsvp.html` with
+`#rsvp-elsewhere` and an external link. The public-site journey removes
+the gate, `rsvp.html`, and `SITE_PASSWORD`. The brunch journey checks
+`wedding.ics`, `brunch.ics`, the Google Calendar link, and the map link
+built from the address.
 
 ## Automated: quality
 
@@ -90,13 +85,13 @@ pages are already on the site.
 
 | Journey |
 |---|
-| Accessibility: no axe violations on the gated page or example pages |
+| Accessibility: no axe violations on the home page or the RSVP page |
 | Phones: buttons and links are big enough to tap (44px) |
 | Reduced motion: everything is visible straight away, nothing animates |
 | Links, images and guest-facing copy |
 
-The accessibility and tap-target journeys also open example pages after
-installing them. Links inside a sentence are exempt from the 44px check.
+The accessibility and tap-target journeys open `index.html` and
+`rsvp.html`. Links inside a sentence are exempt from the 44px check.
 The copy journey checks `rel="noopener"` on new-tab links, `alt` on
 images, `lang`, and `noindex`.
 
@@ -106,31 +101,27 @@ images, `lang`, and `noindex`.
 
 | Journey |
 |---|
-| Build: published files hold no code, no guest names, no private files |
-| Build: refuses the example code, a code baked into a link, duplicate guests |
-| Build: half-removed features are caught (RSVP without guests, gate without code) |
-| Build: CI path reads secrets, not files; default PBKDF2 strength |
+| Build: published files hold no invitation code and no private files |
+| Build: refuses the example code and a code baked into a link |
+| Build: a section with id="rsvp", or a gate with no code, is refused |
+| Build: CI path reads SITE_CONFIG_JS, not files; default PBKDF2 strength |
 | Build: shared markup comes from partials; a misspelled include is caught |
 | Build: an event without a time zone, or with a bad key, is refused |
 
 These are the build's safety checks. The example password `ChangeMe123`
 must still be refused. A gate with no password must still fail. Renaming
-`#rsvp-coming` to `id="rsvp"` must still fail. The CI journey checks that
-the build reads `SITE_CONFIG_JS` from the environment and that the default
-PBKDF2 iteration count is 310000. This fork's deploy sets `SITE_CONFIG_JS`
-only.
-
-Some of these journeys still pass a guest-list fixture into the build to
-prove published files do not leak names and that a duplicate name is
-refused. That fixture lives inside the test. Setup for this fork does not
-add `js/guests.js`.
+`#rsvp-coming` on `rsvp.html` to `id="rsvp"` must still fail, and the
+error must not tell anyone to add `js/guests.js`. The CI journey checks
+that the build reads `SITE_CONFIG_JS` from the environment and that the
+default PBKDF2 iteration count is 310000. This fork's deploy sets
+`SITE_CONFIG_JS` only. Published output does not include `js/guests.js`.
 
 ## Manual checks that still apply
 
 | Check | How |
 |---|---|
-| Real phone | Inputs do not zoom, the page does not scroll sideways, the gate and Coming Soon read clearly |
-| Screen reader (VoiceOver, TalkBack) | Gate, headings, and the Coming Soon section |
+| Real phone | Inputs do not zoom, the page does not scroll sideways, the gate and the RSVP form read clearly |
+| Screen reader (VoiceOver, TalkBack) | Gate, headings, and the RSVP form frame |
 | Live site after deploy | SETUP.md section 6 |
 | Change a wedding fact | Edit `js/config.js`, update `SITE_CONFIG_JS`, re-run the workflow |
 | The code leaked | Change `SITE_PASSWORD`, update the secret, redeploy. Everyone is signed out. |

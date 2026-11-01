@@ -1,12 +1,10 @@
 name: Deploy to GitHub Pages
 
-# The site's private inputs never live in git. Add two repository secrets
+# The invitation code never lives in git. Add one repository secret
 # (Settings → Secrets and variables → Actions):
 #   SITE_CONFIG_JS  the full contents of your js/config.js
-#   GUESTS_JS       the full contents of your js/guests.js (leave it out if
-#                   the site has no RSVP form or personal invite links)
-# setup/build.js turns them into a _site/ with no plaintext invitation code
-# and an encrypted guest list, and only that folder is published.
+# setup/build.js turns it into a _site/ with no plaintext invitation code,
+# and only that folder is published.
 
 on:
   push:
@@ -45,7 +43,6 @@ jobs:
         id: build
         env:
           SITE_CONFIG_JS: ${{ secrets.SITE_CONFIG_JS }}
-          GUESTS_JS: ${{ secrets.GUESTS_JS }}
         run: |
           if [ -z "$SITE_CONFIG_JS" ]; then
             msg="Not deployed: add the SITE_CONFIG_JS repository secret (SETUP.md, section 5), then re-run this workflow."

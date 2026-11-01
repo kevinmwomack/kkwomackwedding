@@ -89,6 +89,21 @@ function applySiteContent() {
     document.title = document.title.replace('{{COUPLE_NAMES}}', fields.coupleNames);
   }
 }
+
+// The RSVP page's iframe. src is assigned here, never through innerHTML.
+function initRsvpForm() {
+  const frame = document.getElementById('rsvp-form');
+  if (!frame) return;
+  const url = _private.RSVP_FORM_URL;
+  if (typeof url !== 'string' || !/^https:\/\/docs\.google\.com\/forms\/d\/e\/[^/?#]+\/viewform(?:\?|$)/.test(url)) return;
+  const form = new URL(url);
+  if (!form.searchParams.has('embedded')) form.searchParams.set('embedded', 'true');
+  frame.src = form.toString();
+  const wrap = frame.closest('.rsvp-form-wrap');
+  const missing = document.getElementById('rsvp-form-missing');
+  if (wrap) wrap.hidden = false;
+  if (missing) missing.hidden = true;
+}
 document.addEventListener('DOMContentLoaded', applySiteContent);
 
 // ---------------------------------------------------------------------------
@@ -297,7 +312,7 @@ function initHero() {
   }
 
   // Fade in hero content
-  document.querySelectorAll('.hero-content, .page-hero-content').forEach(el => {
+  document.querySelectorAll('.hero-content').forEach(el => {
     setTimeout(() => el.classList.add('visible'), prefersReducedMotion ? 0 : 200);
   });
 }
@@ -442,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // own time: <div class="countdown-grid" data-countdown-date="2027-06-13T11:30:00-04:00">
   initCountdown('cd-', document.querySelector('[data-countdown-date]')?.dataset.countdownDate);
   initReveal();
+  initRsvpForm();
   initDayOfButton();
   initCalendarLinks();
 });

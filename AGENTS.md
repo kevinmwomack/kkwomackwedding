@@ -10,12 +10,9 @@ are in [SETUP.md](SETUP.md). Claude Code reads this file through
 `CLAUDE.md`.
 
 [LESSONS.md](LESSONS.md) is history from the template this fork started
-from. It is not a checklist. [SECURITY.md](SECURITY.md) still describes
-that template's guest list and Apps Script. Those sections are not steps
-for this fork. The rules that still apply are below.
-
-Gallery, gifts, day-of, and the thank-you page live in `examples/` and are
-not wired in. Copy one in only when someone asks for it.
+from. It is not a checklist. [SECURITY.md](SECURITY.md) covers the
+invitation code and the courtesy gate. The rules that still apply are
+below.
 
 ## Security rules (read first)
 
@@ -47,13 +44,12 @@ Do not rebuild the stack this fork removed:
 - personal invitation cards and `setup/cards/`
 - the on-site RSVP form, `js/rsvp-upgrade.js`, and a section with `id="rsvp"`
 
-`js/config.example.js` still contains template fields this page does not
-read (`RSVP_ENDPOINT`, `RSVP_QUESTIONS`, `WELCOME`, and the comments that
-mention a guest list). Leave that file's `SITE_PASSWORD` as `ChangeMe123`.
-Do not add a guest list to satisfy those comments.
+`js/config.example.js` keeps `SITE_PASSWORD` as `ChangeMe123`. Do not add
+a guest list, a `GUESTS_JS` secret, an Apps Script, a welcome card, or an
+`examples/` directory to satisfy an old comment.
 
-`setup/build.js` still refuses `id="rsvp"` when there is no guest list.
-The Coming Soon section stays `id="rsvp-coming"`.
+`setup/build.js` refuses a section with `id="rsvp"` unconditionally. The
+form section stays `id="rsvp-coming"` on `rsvp.html`.
 
 ## What to do here
 
@@ -84,11 +80,12 @@ date, venue, or password.
    `js/config.js`), Pages source **GitHub Actions**, push `main`.
    "Deploy from a branch" serves the raw repo. That source is wrong.
 
-The RSVP area (`#rsvp-coming`) says Coming Soon. Leave it until a later
-commit embeds the Google Form there. Follow the Google Forms section in
-PLAN.md. Keep an id other than `rsvp`. Embedding does not confine
-submissions to people who passed the gate: anyone with the form link can
-submit.
+The RSVP area is its own page, `rsvp.html`, not a section of the home
+scroll. `#rsvp-coming` embeds the form from `RSVP_FORM_URL`. `initRsvpForm()`
+in `js/main.js` assigns the iframe `src`. Do not put that URL through
+`innerHTML`. Keep an id other than `rsvp`. The current URL is the tester
+form. Embedding does not confine submissions to people who passed the
+gate: anyone with the form link can submit.
 
 ## Pitfalls that still apply
 
@@ -98,8 +95,9 @@ submit.
 - **The example password fails the build.** `ChangeMe123` stays in
   `js/config.example.js`. A preview or a deploy uses a different password
   in gitignored `js/config.js` and in the `SITE_CONFIG_JS` secret.
-- **`id="rsvp"` fails the build** on this fork. The Coming Soon section is
-  `#rsvp-coming`. A later form embed keeps an id other than `rsvp`.
+- **`id="rsvp"` fails the build** on this fork. The form section is
+  `#rsvp-coming` on `rsvp.html`. The iframe `src` comes from
+  `RSVP_FORM_URL` and stays an id other than `rsvp`.
 - **The gate is a courtesy.** The HTML is readable without the code. Do not
   put a home address or a gift-account number in the page.
 - **Dead markup drift.** If you add a page or section and later remove it,
@@ -118,17 +116,14 @@ Follow [CUSTOMIZING.md](CUSTOMIZING.md). Run `npm test` after changing
 anything in `js/`, `setup/`, or `index.html`. The journeys that still run
 are listed in [JOURNEYS.md](JOURNEYS.md).
 
-## Adding pages and extras
+`npm start` needs no install. `npm test` needs `npm install` once and
+`npm run browsers` once per machine, from a normal terminal. That browser
+stays in the user cache. A sandbox that sets `PLAYWRIGHT_BROWSERS_PATH`
+to its own folder will not see it.
 
-Optional pages live in `examples/` with copy-into-place instructions:
-gallery, Our Story and wedding party (`photos/`), registry and gift options
-(`gifts/`), a wedding-day program and menu (`day-of/`), a public short-link
-redirect (`short-link/`), and the after-the-wedding thank-you
-(`after-the-wedding/`). None of them are wired in.
-`examples/README.md` still mentions adding `js/guests.js` for a personalized
-welcome. This fork does not add that file.
+## Adding a page
 
 Any new page that should be gated needs the `<!-- include: password-gate -->`
-line plus `js/config.js` and `js/main.js`. Shared markup lives in
-`partials/`. Photos go in `images/`, the only image folder the build
-publishes.
+line plus `js/config.js` and `js/main.js`. Start from `index.html` or
+`rsvp.html`. Shared markup lives in `partials/` (the password gate and the
+footer). Photos go in `images/`, the only image folder the build publishes.

@@ -7,7 +7,6 @@ Markup shared by several pages. A page asks for one with a comment, and
 <!-- include: password-gate -->
 <!-- include: password-gate title="Wedding Day" prompt="Enter the invitation code to see the program." -->
 <!-- include: footer -->
-<!-- include: lightbox -->
 ```
 
 `[[name|default]]` in a partial is filled from the matching attribute, or

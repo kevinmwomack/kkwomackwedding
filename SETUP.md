@@ -1,12 +1,12 @@
 # Setting up this fork
 
 You end up with a static invitation page gated by one shared password,
-an RSVP area that says Coming Soon, and a GitHub Pages deploy. The
+an RSVP page that embeds a Google Form, and a GitHub Pages deploy. The
 invitation code lives in gitignored `js/config.js` and in the
 `SITE_CONFIG_JS` repository secret. It never goes into git.
 
-Guest responses will be an embedded Google Form in a later change. This
-setup does not create a guest list and does not deploy an Apps Script.
+Guest responses live in that form. The current embed is the tester form.
+This setup does not create a guest list and does not deploy an Apps Script.
 Decisions and the form settings are in [PLAN.md](PLAN.md).
 
 If you use an AI agent, it should follow [AGENTS.md](AGENTS.md) and
@@ -60,11 +60,24 @@ Then preview:
 npm start          # builds _site/ and serves it at http://localhost:3000
 ```
 
-`npm start` runs `setup/build.js`. It refuses to build while
+`npm start` does not install packages. The build is plain Node. It refuses
+to build while
 `SITE_PASSWORD` is still `ChangeMe123`, warns about leftover
 `{{placeholders}}` and dates without a time zone, and checks the code did
 not end up in any published file. Always preview the built `_site/`. The
 raw folder has no generated key check and will not unlock.
+
+To run the journey tests, install the dev packages and the browser once.
+Preview and the GitHub deploy do not do this.
+
+```bash
+npm install
+npm run browsers       # Chromium, once per machine, from your own terminal
+npm test
+```
+
+`npm install` reads `package.json`. The Chromium download is separate and
+lands in your user cache. A later `npm test` on this computer reuses it.
 
 Creating `js/config.js` and running `npm start` is a local check. It is
 not a commit. Run `git status` and confirm `js/config.js` is not listed
@@ -87,20 +100,17 @@ ship the placeholders.
    one. Fonts are self-hosted in `fonts/` and declared in `css/fonts.css`.
 4. **Favicon**, once you have initials:
    `node setup/generate-favicon.js "A+B"` (uses the theme's color).
-5. **Optional extras** (gallery, Our Story, day-of program, short links,
-   after-the-wedding page) are in [`examples/`](examples/) and are not
-   wired in. Copy one in only when someone asks for it.
 
 ## 4. RSVP
 
-The page already has `<section id="rsvp-coming">` with a Coming Soon
-message. Leave that section until the real Google Form exists. The later
-change embeds the form in that section. Keep an id other than `rsvp`:
-the build fails on `id="rsvp"` when there is no guest list.
+RSVP is `rsvp.html`. `<section id="rsvp-coming">` embeds the form from
+`RSVP_FORM_URL` in `js/config.js`. The page assigns the iframe `src` in
+script. The current URL is the tester form. Replace that key with the
+guest-facing form when it exists. Keep an id other than `rsvp`: the build
+fails on `id="rsvp"`.
 
 Form settings, limits, and the fact that anyone with the form link can
-submit are in PLAN.md, "Google Forms". That embed is its own commit. It
-is not part of the deploy in section 5.
+submit are in PLAN.md, "Google Forms".
 
 ## 5. Deploy
 
@@ -145,7 +155,7 @@ is not part of the deploy in section 5.
 Run these against the **live** site after the first deploy:
 
 - [ ] Fresh visit → gate. Wrong code → "Incorrect code". Right code → the
-      page, with Coming Soon in `#rsvp-coming`.
+      home page. RSVP → `rsvp.html`, and the tester form is in the frame.
 - [ ] Close the tab, reopen → still unlocked. The browser stored a derived
       key, not the password.
 - [ ] View source → the invitation code does not appear. The published

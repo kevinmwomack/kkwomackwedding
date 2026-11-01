@@ -2,41 +2,32 @@
 /**
  * Build the deployable site into _site/.
  *
- *   node setup/build.js                 build _site/ from js/config.js + js/guests.js
+ *   node setup/build.js                 build _site/ from js/config.js
  *   node setup/build.js --out DIR       build somewhere else
- *   node setup/build.js --guests-csv    also write guests.csv (Name,Max,Group,URL)
- *                                       for a mail merge or stationer, and
- *                                       guests-sheet.csv (Name,Max) for the
- *                                       Apps Script "Guests" tab
  *
- * In GitHub Actions the two source files come from repository secrets
- * instead of disk (SITE_CONFIG_JS and GUESTS_JS hold their full contents),
- * so neither file ever needs to be committed.
+ * In GitHub Actions the config comes from the SITE_CONFIG_JS secret
+ * instead of disk, so js/config.js never needs to be committed.
  *
  * What the build does, and why:
  *   - js/config.js keeps the plaintext SITE_PASSWORD on your machine only.
  *     The published config.js gets a PBKDF2 key check instead, never the
  *     password itself.
- *   - js/guests.js is published encrypted (AES-GCM, key derived from the
- *     site password), so the guest list can't be read by fetching the file
- *     without the invitation code.
  *   - Only an allowlist of site files is copied (HTML at the root, css/,
- *     fonts/, images/, js/), so docs, setup scripts, CSVs and notes never
+ *     fonts/, images/, js/), so docs, setup scripts, and notes never
  *     get published by accident.
  *   - Every css/js reference in the HTML gets a ?v=<content hash>, so
  *     guests' phones never run a stale script after you deploy a fix.
  *   - <!-- include: name --> comments pull in shared markup from partials/
- *     (the password gate, the footer, the photo lightbox).
+ *     (the password gate and the footer).
  */
 'use strict';
 
 const crypto = require('crypto');
 const fs     = require('fs');
 const path   = require('path');
-const { ROOT, fail, loadConfig, loadGuests, inviteLink } = require('./lib');
+const { ROOT, fail, loadConfig } = require('./lib');
 const args = process.argv.slice(2);
 const OUT  = path.resolve(ROOT, args.includes('--out') ? args[args.indexOf('--out') + 1] : '_site');
-const WRITE_GUESTS_CSV = args.includes('--guests-csv');
 
 // PBKDF2 work factor. Higher is slower to brute-force but also slower to
 // unlock on an old phone (it runs once per device). Override with
@@ -44,16 +35,16 @@ const WRITE_GUESTS_CSV = args.includes('--guests-csv');
 const DEFAULT_ITERATIONS = 310000;
 
 // ── Checks that catch the mistakes we actually made ─────────────────────────
-function checkConfig(cfg, guests, gatedPages, rsvpPages) {
+function checkConfig(cfg, gatedPages, rsvpPages) {
   const pw = cfg.SITE_PASSWORD;
-  if (rsvpPages.length && !guests.length) {
-    fail(`${rsvpPages.join(', ')} has an RSVP section (id="rsvp") but there's no guest list. ` +
-         'Add js/guests.js, or take the RSVP section out (see CUSTOMIZING.md, "No RSVP form").');
+  // This fork has no guest list and no on-site RSVP form. rsvp.html uses
+  // id="rsvp-coming". A section named rsvp is the old template form.
+  if (rsvpPages.length) {
+    fail(`${rsvpPages.join(', ')} has a section with id="rsvp". This site has no on-site RSVP form. ` +
+         'Keep the embedded form on rsvp.html under an id other than "rsvp" (id="rsvp-coming").');
   }
   if (!pw) {
     // A fully public site is allowed, as long as nothing expects a code.
-    if (guests.length) fail('SITE_PASSWORD is missing, but there is a guest list: it is published ' +
-                            'encrypted with the code, so it needs one.');
     if (gatedPages.length) fail(`SITE_PASSWORD is missing, but ${gatedPages.join(', ')} has a password ` +
                                 'gate. Set a code, or remove the #password-gate block for a public site.');
     return;
@@ -69,8 +60,8 @@ function checkConfig(cfg, guests, gatedPages, rsvpPages) {
 const hasOffset = v => !Number.isNaN(Date.parse(v)) && /(Z|[+-]\d\d:\d\d)$/.test(String(v));
 const OFFSET_HELP = "(e.g. 2027-06-12T16:00:00-04:00), otherwise it means a different moment in every guest's time zone.";
 
-function checkFacts(cfg, guests) {
-  ['WEDDING_DATE', guests.length ? 'RSVP_DEADLINE' : null, cfg.WEDDING_END ? 'WEDDING_END' : null].filter(Boolean).forEach(k => {
+function checkFacts(cfg) {
+  ['WEDDING_DATE', cfg.WEDDING_END ? 'WEDDING_END' : null].filter(Boolean).forEach(k => {
     if (!hasOffset(cfg[k])) console.warn(`Warning: ${k} should be an ISO time with a UTC offset ${OFFSET_HELP}`);
   });
   (cfg.EVENTS || []).forEach((e, i) => {
@@ -80,7 +71,6 @@ function checkFacts(cfg, guests) {
     if (e.end && !hasOffset(e.end)) fail(`EVENTS "${e.key}": end must be an ISO time with a UTC offset`);
   });
   const leftovers = Object.entries(cfg)
-    .filter(([k]) => guests.length || k !== 'RSVP_ENDPOINT')
     .filter(([, v]) => typeof v === 'string' && /\{\{|changeme@|YOUR_GOOGLE_APPS_SCRIPT/i.test(v))
     .map(([k]) => k);
   if (leftovers.length) console.warn(`Warning: still placeholder values in config.js: ${leftovers.join(', ')}`);
@@ -128,13 +118,6 @@ function deriveKey(password, salt, iterations) {
   return crypto.pbkdf2Sync(password.normalize('NFC'), salt, iterations, 32, 'sha256');
 }
 
-function seal(key, obj) {
-  const iv     = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-  const data   = Buffer.concat([cipher.update(JSON.stringify(obj), 'utf8'), cipher.final(), cipher.getAuthTag()]);
-  return { iv: iv.toString('base64'), data: data.toString('base64') };
-}
-
 // ── "Add to calendar" files ─────────────────────────────────────────────────
 // wedding.ics plus one per EVENTS entry. A real file (not a data: link) so
 // iPhones open it straight in Calendar.
@@ -163,6 +146,8 @@ function icsFor(cfg, e) {
 // ── Copy the allowlisted site files ─────────────────────────────────────────
 const ROOT_FILE  = /^(.*\.html|favicon\.(svg|ico|png)|robots\.txt|CNAME|\.nojekyll|site\.webmanifest)$/;
 const SITE_DIRS  = ['css', 'fonts', 'images', 'js'];
+// Source config stays off the site (the build writes a public config.js).
+// A stray js/guests.js from the old template is not published either.
 const NEVER_COPY = /^js\/(config|guests)(\.example)?\.js$/;
 
 function copyDir(rel) {
@@ -200,14 +185,13 @@ function cacheBust(html) {
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
-const cfg    = loadConfig();
-const guests = loadGuests();
+const cfg = loadConfig();
 
 const rootHtml   = fs.readdirSync(ROOT).filter(n => n.endsWith('.html'));
 const rendered   = Object.fromEntries(rootHtml.map(n => [n, expandIncludes(fs.readFileSync(path.join(ROOT, n), 'utf8'), n)]));
 const pagesWith  = re => rootHtml.filter(n => re.test(rendered[n]));
-checkConfig(cfg, guests, pagesWith(/id="password-gate"/), pagesWith(/<section[^>]*\bid="rsvp"/));
-checkFacts(cfg, guests);
+checkConfig(cfg, pagesWith(/id="password-gate"/), pagesWith(/<section[^>]*\bid="rsvp"/));
+checkFacts(cfg);
 checkPages(cfg, rendered);
 
 const hasCode    = !!cfg.SITE_PASSWORD;
@@ -243,11 +227,6 @@ fs.writeFileSync(path.join(OUT, 'js/config.js'),
 
 for (const e of calendarEvents(cfg)) fs.writeFileSync(path.join(OUT, `${e.key}.ics`), icsFor(cfg, e));
 
-fs.writeFileSync(path.join(OUT, 'js/guests.js'), guests.length
-  ? `// Generated by setup/build.js: the guest list, encrypted with the invitation code.\n` +
-    `window.GUEST_LIST_SEALED = ${JSON.stringify(seal(key, guests))};\n`
-  : `// Generated by setup/build.js: no guest list on this site.\nwindow.GUEST_LIST_SEALED = null;\n`);
-
 for (const name of rootHtml) {
   fs.writeFileSync(path.join(OUT, name), cacheBust(rendered[name]));
 }
@@ -272,21 +251,5 @@ const pwPatterns = !hasCode ? [] : [
   }
 })(OUT);
 
-if (WRITE_GUESTS_CSV && !guests.length) {
-  console.warn('Warning: --guests-csv needs a guest list (js/guests.js); nothing written.');
-} else if (WRITE_GUESTS_CSV) {
-  if (!cfg.SITE_URL) console.warn('Warning: set SITE_URL in config.js to put invite links in guests.csv.');
-  const csvCell = s => `"${String(s).replace(/"/g, '""')}"`;
-  const rows = guests.map(g => [g.name, g.max, g.group || '', inviteLink(cfg, g.name)].map(csvCell).join(','));
-  fs.writeFileSync(path.join(ROOT, 'guests.csv'), ['Name,Max,Group,URL', ...rows].join('\n') + '\n');
-  // A separate file for the Sheet: no links, so the code never ends up in a
-  // spreadsheet you might share with a caterer or planner.
-  const sheetRows = guests.map(g => [g.name, g.max].map(csvCell).join(','));
-  fs.writeFileSync(path.join(ROOT, 'guests-sheet.csv'), ['Name,Max', ...sheetRows].join('\n') + '\n');
-  console.log('Wrote guests.csv (invite links, for the QR cards) and guests-sheet.csv (Name,Max, for the ' +
-              'Sheet\'s Guests tab). Both are gitignored; guests.csv has the invitation code in every link.');
-}
-
-console.log(`Built ${path.relative(ROOT, OUT) || OUT}/: ` +
-  (guests.length ? `${guests.length} guest entries (guest list encrypted)` : 'no guest list') +
-  (hasCode ? ', gated by the invitation code.' : ', public (no invitation code).'));
+console.log(`Built ${path.relative(ROOT, OUT) || OUT}/` +
+  (hasCode ? ': gated by the invitation code.' : ': public (no invitation code).'));

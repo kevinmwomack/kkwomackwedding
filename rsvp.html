@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Anti-crawler / privacy -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <!-- Other sites only ever see the domain, never the path or ?pw= (and
+       embedded players like YouTube, which check it, keep working) -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <title>RSVP · {{COUPLE_NAMES}}</title>
+
+  <!-- Fonts -->
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- include: password-gate -->
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav id="navbar" aria-label="Main navigation">
+    <div class="nav-inner">
+      <!-- TODO: replace with the couple's initials -->
+      <a class="nav-brand" href="index.html">{{Initials}}</a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html#details">The Wedding</a></li>
+        <li><a href="index.html#travel">Travel</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+        <li><a href="rsvp.html" class="nav-cta" aria-current="page">RSVP</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+  <!-- ===== RSVP ===== -->
+  <section id="rsvp-coming" class="rsvp-section rsvp-page">
+    <div class="rsvp-bg"></div>
+    <div class="container container--narrow">
+      <p class="section-eyebrow reveal">Join Us</p>
+      <h1 class="section-title reveal">RSVP</h1>
+      <p class="section-body" id="rsvp-form-missing">The RSVP form is not available right now.</p>
+      <div class="rsvp-form-wrap" hidden>
+        <iframe id="rsvp-form" class="rsvp-form" title="RSVP form"></iframe>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- include: footer -->
+
+  <!-- js/config.js here is the version setup/build.js generates (no plaintext code). -->
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

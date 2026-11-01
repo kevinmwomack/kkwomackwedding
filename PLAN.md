@@ -11,11 +11,11 @@ One password-gated invitation page. Wedding facts live on the site. Guest respon
 - One shared invitation password. No guest list, no per-guest QR codes, no first-and-last-name gate.
 - The welcome card is removed. It only appears for a `?name=&pw=` link, it repeats the schedule, and it needs a guest list. Plus-ones would be more columns to match. The form collects the name instead.
 - No visa-support question. Guests are in the US.
-- The RSVP section will embed the form once the real form exists. The first version of the page says Coming Soon there instead.
-- `js/config.js` stays gitignored and is injected as the `SITE_CONFIG_JS` secret. Do not commit it. Skip the `GUESTS_JS` secret. Do not create `js/guests.js`. Do not deploy the Apps Script.
-- Remove the on-site RSVP engine, the guest-list files, the welcome card, the personal-invitation card generator, and the tests that only cover those. This fork does not need them.
-- Keep the password gate and the build checks that protect it, including the refusal to publish the example password `ChangeMe123`.
-- Gallery, gifts, day-of, and thank-you stay unused until asked for.
+- The RSVP lives on its own page, `rsvp.html`, so a finished reply is not sitting in the home scroll. That page embeds `RSVP_FORM_URL`. The current value is the tester form, not the guest-facing form.
+- `js/config.js` stays gitignored and is injected as the `SITE_CONFIG_JS` secret. Do not commit it. There is no `GUESTS_JS` secret and no `js/guests.js`. Do not add them. Do not deploy an Apps Script.
+- The on-site RSVP engine, the guest-list files, the welcome card, the personal-invitation card generator, and the tests that only covered those are already gone. Do not rebuild them.
+- Keep the password gate and the build checks that protect it, including the refusal to publish the example password `ChangeMe123`. A section with `id="rsvp"` fails the build.
+- Gallery, gifts, day-of, and thank-you pages are not in this repo. Do not restore an `examples/` directory to copy them from.
 - Real names, date, venue, schedule, dress code, travel, registry, palette, hero photo, and the favicon wait until copy is ready.
 
 ## How this template actually works
@@ -28,7 +28,7 @@ Checked against the template, then updated for this fork.
 - The build turns `SITE_PASSWORD` into a PBKDF2 check (`AUTH.salt`, `AUTH.iterations`, `AUTH.check`, 310,000 iterations by default) and fails if the plaintext code appears in the output. The browser stores the derived key in `localStorage` under `wedding_key`. There is no `VALID_HASHES` list and no `sessionStorage` unlock.
 - The gate is a courtesy. The HTML is readable without the code. Do not put a home address or a gift-account number in the page.
 - The directions link is already built from `VENUE_NAME` plus `VENUE_ADDRESS`. `data-field` only sets text. An iframe `src` needs its own assignment and must not go through `innerHTML`.
-- `<section id="rsvp">` with no guest list fails the build (`setup/build.js`). `CUSTOMIZING.md` says to use a different id. The documented example is `rsvp-elsewhere`.
+- A `<section>` with `id="rsvp"` fails the build (`setup/build.js`). This fork has no guest list, so that failure does not depend on one. `rsvp.html` uses `id="rsvp-coming"`. `CUSTOMIZING.md` shows `rsvp-elsewhere` for a button to another service.
 - A leftover `?name=` on the URL is ignored. A correct password always opens the page. The welcome-card branch that used to look up a guest list was removed with the card.
 - The active palette in `css/theme.css` is Midnight & Blush. `CLAUDE.md` only imports `AGENTS.md`.
 
@@ -106,7 +106,7 @@ Order:
 6. After the DNS check passes, turn on **Enforce HTTPS**. The certificate can take up to an hour. Extra `A`, `AAAA`, or `CNAME` records can block it. If the domain uses CAA records, one of them must allow Let’s Encrypt.
 7. Put the final address in `SITE_URL`, update the `SITE_CONFIG_JS` secret, and re-run the workflow. Do this before printing anything that contains the address.
 
-A public repo is free. GitHub Pages from a private repo needs a paid plan. The invitation code and guest list are not what a public repo would expose, because those files are gitignored. The page text would be readable in the repo.
+A public repo is free. GitHub Pages from a private repo needs a paid plan. The invitation code is not what a public repo would expose, because `js/config.js` is gitignored. The page text would be readable in the repo.
 
 ## Deploy and local preview
 
@@ -122,9 +122,9 @@ Use `main` for the site. Use `github.io` until a domain is purchased, then attac
 
 **The example password.** `setup/build.js` refuses to build when `SITE_PASSWORD` is still `ChangeMe123`. That string is the public placeholder in `js/config.example.js`. The check is in the build, not only in a test. `tests/02-build.test.js` asserts that the build still fails. Removing the check would let a site deploy with a password anyone can read in the template. Keep the check. The first deploy uses a real password in gitignored `js/config.js`, copied into the `SITE_CONFIG_JS` secret. The example file can keep showing `ChangeMe123`.
 
-**Tests that match the site we are keeping.** Delete the journeys that only drive the on-site RSVP, the guest list, the welcome card, the Apps Script, and personal invitation cards. Keep the journeys that protect the password gate and the build: the code must not appear in published files, the example password must be refused, and a gate with no password must fail.
+**Tests that match the site we are keeping.** The suite does not drive an on-site RSVP form, a guest list, a welcome card, an Apps Script, personal invitation cards, or pages copied out of `examples/`. Keep the journeys that protect the password gate and the build: the code must not appear in published files, the example password must be refused, a gate with no password must fail, and `id="rsvp"` must fail.
 
-`examples/` stays for now. Nothing in it is loaded. The design session can still copy a gallery or a day-of page from it.
+`examples/` is not in this repo. A gallery or a day-of page, if one is wanted later, is new work on the live pages.
 
 ## Implementation steps
 
@@ -138,7 +138,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [x] **First `github.io` deploy.** Gitignored `js/config.js` with a real password (not `ChangeMe123`) and placeholder copy. `SITE_CONFIG_JS` is set. Pages source is GitHub Actions. The Actions token cannot create the Pages site (`Resource not accessible by integration` on `enablement: true`). The owner turned Pages on once under Settings → Pages → GitHub Actions, then re-ran the workflow. The live site matches `npm start`.
 
-- [ ] **Guest-facing Google Form,** outside GitHub. Settings from the Google Forms section above. Swap Coming Soon for the embed in a later commit, then check the iframe on a phone.
+- [ ] **Guest-facing Google Form,** outside GitHub. Settings from the Google Forms section above. `rsvp.html` currently embeds the tester form through `RSVP_FORM_URL`. Swap that URL for the guest-facing form, then check the iframe on a phone.
 
 - [ ] **Design and guest-facing copy,** in a later session. Names, date, venue, schedule, travel, palette, photos, favicon, and the real embed URL.
 

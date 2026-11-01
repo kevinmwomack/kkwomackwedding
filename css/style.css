@@ -375,8 +375,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   );
 }
 
-.hero-content,
-.page-hero-content {
+.hero-content {
   position: relative;
   text-align: center;
   padding: 0 1.5rem;
@@ -692,46 +691,36 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .rsvp-section .section-title { color: var(--white); }
 .rsvp-section .section-body  { color: rgba(255,255,255,0.85); }
 
-/* "Add to calendar" links under a details card */
-.calendar-links { margin-top: 0.9rem; font-size: 0.85rem; color: var(--muted); }
-.calendar-links a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; display: inline-block; padding: 0.35rem 0; }
-
-/* =============================================
-   SUB-PAGE HERO (extra pages, e.g. examples/day-of, examples/photos)
-   ============================================= */
-.page-hero {
-  position: relative;
-  min-height: max(42vh, 320px);
-  padding: 6rem 0 3rem; /* clears the fixed nav; grows with a countdown inside */
+/* RSVP is its own page. The block fills the first screen under the fixed nav. */
+.rsvp-page {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-dark);
+  padding: 7rem 0 4rem;
+  box-sizing: border-box;
+}
+.rsvp-page .section-title { margin-top: 0; margin-bottom: 1.5rem; }
+.rsvp-form-wrap {
+  background: var(--white);
+  border-radius: var(--radius);
   overflow: hidden;
+  line-height: 0;
 }
-.page-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 30% 60%, rgba(var(--accent-rgb), 0.18) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 30%, rgba(var(--primary-rgb), 0.25) 0%, transparent 50%);
+.rsvp-form {
+  display: block;
+  width: 100%;
+  height: 895px;
+  border: 0;
+  background: var(--white);
 }
-.page-hero-title {
-  font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
-  margin-bottom: 0.75rem;
+@media (max-width: 700px) {
+  .rsvp-form { height: 1200px; }
 }
-.page-hero-sub {
-  font-size: 0.82rem;
-  letter-spacing: var(--ls-btn);
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
-}
-.page-hero .countdown-grid { margin-top: 2rem; gap: clamp(0.75rem, 4vw, 3rem); flex-wrap: nowrap; }
-.page-hero .countdown-block { min-width: 56px; }
-.page-hero .countdown-num { font-size: clamp(2rem, 4vw, 3.5rem); }
+
+/* "Add to calendar" links under a details card */
+.calendar-links { margin-top: 0.9rem; font-size: 0.85rem; color: var(--muted); }
+.calendar-links a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; display: inline-block; padding: 0.35rem 0; }
 
 /* Active nav link on sub-pages */
 [aria-current="page"] { color: var(--accent); }
@@ -766,13 +755,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   from { opacity: 0; transform: translateY(16px) scale(0.95); }
   to   { opacity: 1; transform: none; }
 }
-
-/* =============================================
-   THANK-YOU SECTION (after the wedding — see examples/after-the-wedding)
-   ============================================= */
-.thanks-section { text-align: center; }
-.thanks-section .section-body a { color: var(--primary-dark); text-decoration: underline; text-underline-offset: 2px; }
-.thanks-sig { font-family: var(--font-script); font-size: 1.8rem; color: var(--accent); margin-top: 1.25rem; }
 
 /* =============================================
    FOOTER

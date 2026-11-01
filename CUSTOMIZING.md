@@ -1,11 +1,9 @@
 # Customizing this fork
 
-The current page is a password-gated invitation. The RSVP area is
-`<section id="rsvp-coming">` and says Coming Soon. The later change is to
-embed a Google Form in that section. Follow [PLAN.md](PLAN.md) for the
-form settings.
+The current page is a password-gated invitation. RSVP is its own page,
+`rsvp.html`. `<section id="rsvp-coming">` embeds the form from
+`RSVP_FORM_URL`. Follow [PLAN.md](PLAN.md) for the form settings.
 
-Gallery, gifts, and day-of pages live in `examples/` and are not wired in.
 `css/theme.css` is the only color file. After a change, `npm start` to
 look and `npm test` to check the journeys in [JOURNEYS.md](JOURNEYS.md).
 
@@ -18,30 +16,31 @@ invitation cards are already gone. Leave them out. There is no
 
 | You want to add… | Put it in | Notes |
 |---|---|---|
-| A new page | `yourpage.html` at the repo root | Start from a page in `examples/`. Gated or public: see "Pages" below. |
+| A new page | `yourpage.html` at the repo root | Start from `index.html` or `rsvp.html`. Gated or public: see "Pages" below. |
 | Styles for it | `css/yourfeature.css`, linked after `style.css` | Use the color and font tokens from `css/theme.css` (`var(--primary)`, `rgba(var(--accent-rgb), 0.3)`…), never new hex values, so a theme change still covers it. |
 | Markup used on several pages | `partials/name.html`, pulled in with `<!-- include: name -->` | The build swaps it in; see `partials/README.md`. |
 | Behavior | `js/yourfeature.js`, loaded with `defer` after `js/main.js` | Return early when your elements aren't on the page, or one error stops every script after it. |
 | Photos, logos | `images/` | The only image folder the build publishes. Resize to ~1600px first. |
 | A wedding fact shown on the page | a new key in `js/config.js` | Show it with `<span data-field="YOUR_KEY"></span>`. Everything in config.js except `SITE_PASSWORD` is published. |
-| The Google Form | inside `#rsvp-coming` | See "RSVP" below. Assign the iframe `src` in script. Do not put it through `innerHTML`. |
+| The Google Form | `RSVP_FORM_URL` in `js/config.js`, shown in `#rsvp-coming` on `rsvp.html` | The page assigns the iframe `src` in script. Do not put it through `innerHTML`. |
 | Something secret (an account number, a private address) | nowhere in the site | Anyone with the address can read every published file. Put "contact us" instead. |
 
-## The RSVP area
+## The RSVP page
 
-`#rsvp-coming` stays Coming Soon until the real form exists. When it does,
-replace the Coming Soon paragraph in that same section with the embed.
-Keep an id other than `rsvp`. `setup/build.js` refuses `id="rsvp"` when
-there is no guest list.
+`rsvp.html` holds `#rsvp-coming`. The iframe starts without a `src`.
+`initRsvpForm()` in `js/main.js` sets it from `RSVP_FORM_URL`. Keep an id
+other than `rsvp`. `setup/build.js` refuses `id="rsvp"`.
 
-The embed is the form's public link in a frame. Anyone with that link can
-submit. Settings are in PLAN.md.
+The current URL is the tester form. Swap `RSVP_FORM_URL` for the
+guest-facing form when that exists. The home page links to `rsvp.html`
+from the nav and the hero button. The form is not part of the home scroll.
+
+Anyone with the form link can submit. Settings are in PLAN.md.
 
 ### A button to another RSVP service
 
-Replace the Coming Soon section with a section whose id is not `rsvp`,
-and point the nav and hero links at it. The test suite uses
-`rsvp-elsewhere`:
+Replace the form section on `rsvp.html` with a section whose id is not
+`rsvp`. The test suite uses `rsvp-elsewhere`:
 
 ```html
   <section id="rsvp-elsewhere" class="rsvp-section section-pad">
@@ -55,8 +54,8 @@ and point the nav and hero links at it. The test suite uses
 
 ### Removing the RSVP area
 
-Delete `<section id="rsvp-coming">` and the nav and hero links that point
-at `#rsvp-coming`. The rest of the page keeps working.
+Delete `rsvp.html` and the nav and hero links that point at it. The rest
+of the site keeps working.
 
 ## No password (a public site)
 
@@ -77,8 +76,7 @@ gone too, search `css/style.css` for the section's class names.
 Set `OPEN_WINDOW` to open every page without the code for a window.
 Nothing is saved to the device, so the gate returns afterwards. Set
 `DAY_OF_BUTTON` for a floating button on the home page during a window
-(for example "Today's Program" linking at a day-of page). Copy a day-of
-page from `examples/day-of/` only when you want that page on the site.
+(for example "Today's Program" linking to a section or another page).
 
 ## Adding things
 
@@ -120,12 +118,9 @@ it should ask for the code.
 
 Any page with the `<!-- include: password-gate -->` line and `js/config.js`
 plus `js/main.js` is behind the same code. A guest who unlocked one page
-has unlocked them all. A page without the block is public. `examples/` has
-finished pages to start from (Our Story, a day-of program, a menu). They
-are not on the site until you copy them in. For another event with its own
-countdown, see "Other events" in `examples/README.md`. That file also
-mentions `js/guests.js` for a personalized welcome. Skip that. This page
-has no guest list.
+has unlocked them all. A page without the block is public. For another
+event with its own countdown and calendar file, see "Other events" above.
+This page has no guest list.
 
 Photos go in `images/`.
 
@@ -141,7 +136,7 @@ generator reads the same file.
 |---|---|
 | Change a wedding fact | Edit `js/config.js`, update the `SITE_CONFIG_JS` secret, re-run the workflow. |
 | Change the code | Edit `SITE_PASSWORD` in `js/config.js`, update the secret, redeploy. Everyone is signed out, so only if it leaked. Leave `js/config.example.js` as `ChangeMe123`. |
-| Embed the Google Form | A commit that fills `#rsvp-coming` and keeps an id other than `rsvp`. Then check the iframe on a phone. |
+| Embed a different Google Form | Put its public embed link in `RSVP_FORM_URL`, update the `SITE_CONFIG_JS` secret, and redeploy. Then check the iframe on a phone. |
 | Edit page text or design | Commit and push. The workflow deploys. Phones get the new CSS/JS on the next load (the build adds a content hash to every link). |
 
 `js/config.js` stays gitignored. Check `git status` before every commit.

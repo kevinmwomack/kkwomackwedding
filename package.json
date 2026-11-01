@@ -8,6 +8,7 @@
   "scripts": {
     "build": "node setup/build.js",
     "start": "node setup/build.js && node setup/serve.js",
+    "browsers": "playwright install chromium",
     "test": "node tests/run.js"
   },
   "devDependencies": {

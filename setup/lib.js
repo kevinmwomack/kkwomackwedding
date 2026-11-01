@@ -1,5 +1,4 @@
-// Shared by setup/build.js: reading the private source files. An optional
-// guest list can still be sealed into the build; this site does not require one.
+// Shared by setup/build.js: reading js/config.js, or the SITE_CONFIG_JS secret.
 'use strict';
 
 const fs   = require('fs');
@@ -36,35 +35,4 @@ function loadConfig() {
   return cfg;
 }
 
-// The guest list, checked. Optional: a site without RSVPs or personal
-// invite links doesn't need one ([] when missing).
-function loadGuests() {
-  const src = readSource('GUESTS_JS', 'js/guests.js', true);
-  if (!src) return [];
-  let list;
-  try { list = vm.runInContext(`${src.code}\n;GUEST_LIST`, vm.createContext({}), { filename: src.from }); }
-  catch (e) { fail(`couldn't read ${src.from}: ${e.message}`); }
-  if (!Array.isArray(list)) fail(`${src.from} must define const GUEST_LIST = [ ... ]`);
-
-  const seen = new Set();
-  list.forEach((g, i) => {
-    if (!g || typeof g.name !== 'string' || !g.name.trim()) fail(`guest #${i + 1} has no name`);
-    if (!Number.isInteger(g.max) || g.max < 1) fail(`"${g.name}" needs a whole-number max of 1 or more`);
-    const key = g.name.trim().toLowerCase();
-    if (seen.has(key)) fail(`"${g.name}" is on the guest list twice (names must be unique, they key the RSVP sheet)`);
-    seen.add(key);
-  });
-  // Extra fields (a table number, the events they're invited to) are kept
-  // and encrypted with the rest, for features to use.
-  return list.map(g => Object.assign({}, g, { name: g.name.trim() }));
-}
-
-// Optional guests.csv link. This page does not read ?name=; a correct code
-// opens the site either way. The plaintext code stays in the gitignored CSV.
-function inviteLink(cfg, name) {
-  const base = String(cfg.SITE_URL || '').replace(/\/+$/, '');
-  if (!base) return '';
-  return `${base}/?${new URLSearchParams({ name, pw: cfg.SITE_PASSWORD || '' })}#rsvp-coming`;
-}
-
-module.exports = { ROOT, fail, readSource, loadConfig, loadGuests, inviteLink };
+module.exports = { ROOT, fail, readSource, loadConfig };

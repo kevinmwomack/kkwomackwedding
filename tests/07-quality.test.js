@@ -1,15 +1,16 @@
-// Quality checks on every page and important state, with every example
-// installed: accessibility (axe), touch targets, reduced motion, links,
-// images, and guest-facing copy.
+// Quality checks on the real pages: accessibility (axe), touch targets,
+// reduced motion, links, images, and guest-facing copy.
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { journey, check, makeSite, config, serve, newDevice, installAllExamples, PASSWORD } = require('./lib');
+const { journey, check, makeSite, config, serve, newDevice, PASSWORD } = require('./lib');
+
+const PAGES = ['', 'rsvp.html'];
 
 let srv;
 async function qualitySite() {
   if (srv) return srv;
-  const site = makeSite('quality', { config: config({ WHATSAPP_LINK: 'https://wa.me/15555550123', VENUE_ADDRESS: '1 Glass Lane' }), edit: installAllExamples });
+  const site = makeSite('quality', { config: config({ WHATSAPP_LINK: 'https://wa.me/15555550123', VENUE_ADDRESS: '1 Glass Lane' }) });
   const r = site.build();
   check(r.ok, r.output);
   srv = await serve(site.file('_site'));
@@ -26,16 +27,13 @@ async function axe(page) {
     .violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')}`));
 }
 
-journey('Accessibility: no axe violations on the gated page or example pages', async () => {
+journey('Accessibility: no axe violations on the home page or the RSVP page', async () => {
   const { url } = await qualitySite();
   const pw = new URLSearchParams({ pw: PASSWORD });
   const states = [
     ['gate', url, null],
     ['home', `${url}?${pw}`, null],
-    ['lightbox open', `${url}?${pw}`, async p => { await p.focus('.gallery-item >> nth=0'); await p.keyboard.press('Enter'); await p.waitForSelector('#lightbox.open'); }],
-    ['our story', `${url}our-story.html?${pw}`, null],
-    ['day-of program', `${url}live.html?${pw}`, null],
-    ['menu', `${url}menu.html?${pw}`, null],
+    ['rsvp', `${url}rsvp.html?${pw}`, null],
   ];
   const problems = [];
   for (const [label, u, steps] of states) {
@@ -52,10 +50,10 @@ journey('Phones: buttons and links are big enough to tap (44px)', async () => {
   const { url } = await qualitySite();
   const page = await newDevice({ viewport: { width: 375, height: 760 } });
   const small = [];
-  for (const p of ['', 'our-story.html', 'live.html', 'menu.html']) {
+  for (const p of PAGES) {
     await page.goto(`${url}${p}?${new URLSearchParams({ pw: PASSWORD })}`); await page.waitForTimeout(800);
     small.push(...await page.evaluate(page => Array.from(document.querySelectorAll('button, a[href], input[type="radio"] + *, select'))
-      .filter(el => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && s.visibility !== 'hidden' && !el.closest('[hidden], #lightbox:not(.open), .skip-link'); })
+      .filter(el => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && s.visibility !== 'hidden' && !el.closest('[hidden], .skip-link'); })
       // Links inside a sentence are exempt (WCAG 2.5.8 "inline" exception)
       .filter(el => !(el.tagName === 'A' && el.closest('p') && el.closest('p').textContent.trim().length > el.textContent.trim().length + 20))
       .filter(el => el.getBoundingClientRect().height < 44)
@@ -77,7 +75,7 @@ journey('Links, images and guest-facing copy', async () => {
   const { url } = await qualitySite();
   const page = await newDevice();
   const issues = [];
-  for (const p of ['', 'our-story.html', 'live.html', 'menu.html']) {
+  for (const p of PAGES) {
     await page.goto(`${url}${p}?${new URLSearchParams({ pw: PASSWORD })}`); await page.waitForTimeout(600);
     issues.push(...await page.evaluate(p => {
       const out = [];

@@ -24,24 +24,27 @@ journey('Guest types the code: wrong, then right; stays unlocked after closing t
   await page.waitForSelector('#password-gate', { state: 'detached' });
   check(!(await page.$('#welcome-overlay')), 'no welcome card');
   check(!(await page.$('.gate-not-found')), 'a typed code does not show not-on-the-list');
-  check(/coming soon/i.test(await page.textContent('#rsvp-coming')), 'RSVP area says coming soon');
+  check(!(await page.$('#rsvp-coming')), 'home page has no RSVP section');
   check((await page.textContent('.hero-names')) === 'Sam & Riley', 'config applied');
   const stored = await page.evaluate(() => localStorage.getItem('wedding_key'));
   check(stored && !stored.includes('velvet'), 'remembers a key, not the code');
+  await page.goto(new URL('rsvp.html', url).href);
+  await page.waitForSelector('#password-gate', { state: 'detached' });
+  check(await page.$('#rsvp-form') && /docs\.google\.com\/forms\/d\/e\/.+embedded=true/.test(await page.getAttribute('#rsvp-form', 'src')), 'RSVP page embeds the form');
   await page.reload(); await page.waitForTimeout(800);
-  check(!(await page.isVisible('#gate-input')), 'still unlocked');
+  check(!(await page.isVisible('#gate-input')), 'still unlocked on the RSVP page');
   noProblems(page);
 });
 
 journey('A link with ?name= and the right code opens the page and strips those params', async () => {
   const { url } = await defaultSite();
   const page = await newDevice();
-  await page.goto(link(url, { name: 'Nobody Here', pw: PASSWORD }, '#rsvp-coming'));
+  await page.goto(link(new URL('rsvp.html', url).href, { name: 'Nobody Here', pw: PASSWORD }));
   await page.waitForSelector('#password-gate', { state: 'detached' });
   check(!/pw=|name=/.test(page.url()), `address bar still has the code: ${page.url()}`);
   check(!(await page.$('.gate-not-found')), 'name in the link does not block the page');
   check(!(await page.$('#welcome-overlay')), 'no welcome card');
-  check(/coming soon/i.test(await page.textContent('#rsvp-coming')), 'coming soon section');
+  check(await page.$('#rsvp-form') && /docs\.google\.com\/forms\/d\/e\/.+embedded=true/.test(await page.getAttribute('#rsvp-form', 'src')), 'form embedded on the RSVP page');
   noProblems(page);
 });
 
@@ -51,6 +54,9 @@ journey('Guest on a small phone: no sideways scrolling', async () => {
   await page.goto(link(url, { pw: PASSWORD }));
   await page.waitForSelector('#password-gate', { state: 'detached' });
   check(await page.evaluate(() => document.documentElement.scrollWidth <= 320), 'horizontal scroll at 320px');
+  await page.goto(link(new URL('rsvp.html', url).href, { pw: PASSWORD }));
+  await page.waitForSelector('#password-gate', { state: 'detached' });
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= 320), 'RSVP page horizontal scroll at 320px');
 });
 
 journey('Wedding weekend: everything opens without the code; Today\'s Program button', async () => {
@@ -65,7 +71,9 @@ journey('Wedding weekend: everything opens without the code; Today\'s Program bu
     await page.goto(srv.url); await page.waitForTimeout(800);
     check(!(await page.isVisible('#gate-input')), 'gate open in the window');
     check(await page.isVisible('.day-of-program-btn'), 'button on the day');
-    check(/coming soon/i.test(await page.textContent('#rsvp-coming')), 'coming soon is on the open page');
+    await page.goto(srv.url + 'rsvp.html'); await page.waitForTimeout(800);
+    check(!(await page.isVisible('#gate-input')), 'RSVP page open in the window');
+    check(await page.$('#rsvp-form') && /docs\.google\.com\/forms/.test(await page.getAttribute('#rsvp-form', 'src')), 'form is on the RSVP page');
     noProblems(page);
     page = await newDevice({ at: '2099-06-15T10:00:00-04:00' });
     await page.goto(srv.url); await page.waitForTimeout(800);
