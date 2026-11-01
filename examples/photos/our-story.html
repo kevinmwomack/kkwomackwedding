@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+  "Our Story" page: a photo timeline, alternating left/right, each photo
+  opening in a lightbox. To use it:
+    cp examples/photos/our-story.html .
+    cp examples/photos/photos.css css/
+    cp examples/photos/photos.js  js/
+  then replace every {{...}}, add photos to images/, and link the page from
+  the nav in index.html (and from WELCOME.buttons in js/config.js if you
+  want it on the welcome card).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Our Story · {{COUPLE_NAMES}}</title>
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/photos.css" />
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- include: password-gate -->
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav id="navbar" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">{{Initials}}</a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="our-story.html" aria-current="page">Our Story</a></li>
+        <li><a href="index.html#details">The Wedding</a></li>
+        <li><a href="index.html#travel">Travel</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+        <li><a href="index.html#rsvp" class="nav-cta">RSVP</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+  <!-- ===== PAGE HERO ===== -->
+  <section class="page-hero">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content fade-in">
+      <h1 class="page-hero-title">How We Got Here</h1>
+      <div class="hero-divider"><span></span><span class="hero-divider-icon">&#10022;</span><span></span></div>
+      <p class="page-hero-sub">A story that continues to be written</p>
+    </div>
+  </section>
+
+  <!-- ===== OUR STORY ===== -->
+  <section class="story-section section-pad">
+    <div class="container">
+      <p class="section-eyebrow reveal">From the Beginning</p>
+      <h2 class="section-title reveal">Our Story</h2>
+
+      <!-- One .timeline-item per moment; alternate with timeline-item--right.
+           The empty <div></div> is the middle grid column (the dot). -->
+      <div class="timeline">
+
+        <div class="timeline-item reveal">
+          <div class="timeline-img-wrap">
+            <img src="images/story-1.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          </div>
+          <div></div>
+          <div class="timeline-content">
+            <span class="timeline-date">{{Month Year}}</span>
+            <h3>{{How We Met}}</h3>
+            <p>{{A few sentences about this moment.}}</p>
+          </div>
+        </div>
+
+        <div class="timeline-item timeline-item--right reveal">
+          <div class="timeline-img-wrap">
+            <img src="images/story-2.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          </div>
+          <div></div>
+          <div class="timeline-content">
+            <span class="timeline-date">{{Month Year}}</span>
+            <h3>{{First Adventure}}</h3>
+            <p>{{A few sentences about this moment.}}</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-img-wrap">
+            <img src="images/story-3.jpg" alt="{{Describe the photo}}" loading="lazy" />
+          </div>
+          <div></div>
+          <div class="timeline-content">
+            <span class="timeline-date">{{Month Year}}</span>
+            <h3>{{The Proposal}}</h3>
+            <p>{{A few sentences about this moment.}}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- include: lightbox -->
+
+  </main>
+
+  <!-- include: footer -->
+
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/photos.js" defer></script>
+</body>
+</html>

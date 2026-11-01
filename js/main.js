@@ -312,7 +312,7 @@ function initHero() {
   }
 
   // Fade in hero content
-  document.querySelectorAll('.hero-content').forEach(el => {
+  document.querySelectorAll('.hero-content, .page-hero-content').forEach(el => {
     setTimeout(() => el.classList.add('visible'), prefersReducedMotion ? 0 : 200);
   });
 }

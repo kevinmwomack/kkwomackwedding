@@ -45,8 +45,10 @@ Do not rebuild the stack this fork removed:
 - the on-site RSVP form, `js/rsvp-upgrade.js`, and a section with `id="rsvp"`
 
 `js/config.example.js` keeps `SITE_PASSWORD` as `ChangeMe123`. Do not add
-a guest list, a `GUESTS_JS` secret, an Apps Script, a welcome card, or an
-`examples/` directory to satisfy an old comment.
+a guest list, a `GUESTS_JS` secret, an Apps Script, or a welcome card.
+`examples/` is a set of starters (gallery, gifts, day-of, a short link,
+a thank-you). Nothing in it is on the site until someone asks to copy
+one in. Do not add `js/guests.js` to satisfy a note in that folder.
 
 `setup/build.js` refuses a section with `id="rsvp"` unconditionally. The
 form section stays `id="rsvp-coming"` on `rsvp.html`.

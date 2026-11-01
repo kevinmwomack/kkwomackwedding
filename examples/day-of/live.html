@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--
+  Wedding-day program page. On the day, the current item highlights itself
+  and scrolls into view. To use it:
+    cp examples/day-of/live.html .
+    cp examples/day-of/day-of.css css/
+    cp examples/day-of/day-of.js  js/
+  then fill in the {{...}}s and set data-start on every item (ISO time with
+  the venue's UTC offset). Point guests at it with DAY_OF_BUTTON in
+  js/config.js and/or a printed table card. Same invitation code as the rest
+  of the site; set OPEN_WINDOW so nobody needs it on the day.
+
+  Print the address as text too (example.com/live), not only as a QR code:
+  guests type what they can read, and some phones won't scan in a dim room.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Wedding Day · {{COUPLE_NAMES}}</title>
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/day-of.css" />
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- include: password-gate title="Wedding Day" prompt="Enter the invitation code to see the program." -->
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav id="navbar" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">{{Initials}}</a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="live.html" aria-current="page">Program</a></li>
+        <li><a href="index.html">Main Site</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+    <!-- ===== PAGE HERO ===== -->
+    <section class="page-hero">
+      <div class="page-hero-overlay"></div>
+      <div class="page-hero-content fade-in">
+        <h1 class="page-hero-title">Wedding Day Program</h1>
+        <div class="hero-divider"><span></span><span class="hero-divider-icon">&#10022;</span><span></span></div>
+        <p class="page-hero-sub"><span data-field="weddingDateDisplay">{{Wedding Date}}</span> &nbsp;&middot;&nbsp; <span data-field="venueName">{{Venue Name}}</span></p>
+        <div class="countdown-grid" aria-live="polite" aria-atomic="true">
+          <div class="countdown-block"><span class="countdown-num" id="cd-days">--</span><span class="countdown-label">Days</span></div>
+          <div class="countdown-block"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-label">Hours</span></div>
+          <div class="countdown-block"><span class="countdown-num" id="cd-minutes">--</span><span class="countdown-label">Minutes</span></div>
+          <div class="countdown-block"><span class="countdown-num" id="cd-seconds">--</span><span class="countdown-label">Seconds</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PROGRAM =====
+         Remove data-alt-time-zone/data-alt-label if you don't need a second
+         time zone; otherwise use an IANA zone name (e.g. Africa/Lagos). -->
+    <section class="program-section" aria-label="Wedding day program"
+             data-alt-time-zone="Europe/London" data-alt-label="UK">
+      <div class="container container--narrow">
+
+        <div id="live-status-banner" class="live-status-banner hidden" aria-live="polite">
+          Today is the day! The program below updates as the evening unfolds.
+        </div>
+
+        <!-- One tap to the things people look for on the day. Delete any you don't need. -->
+        <section class="livestream-card" aria-label="Livestream">
+          <div class="livestream-icon" aria-hidden="true">&#9654;&#xFE0E;</div>
+          <div>
+            <h2>Watch the Livestream</h2>
+            <a href="{{https://www.youtube.com/live/...}}" class="livestream-link" target="_blank" rel="noopener">Watch the Ceremony Live &rarr;</a>
+            <p>The stream starts at {{4:30 PM}}.</p>
+          </div>
+        </section>
+
+        <section class="livestream-card" aria-label="Share your photos">
+          <div class="livestream-icon" aria-hidden="true">&#128247;&#xFE0E;</div>
+          <div>
+            <h2>Share Your Photos</h2>
+            <a href="{{shared album link}}" class="livestream-link" target="_blank" rel="noopener">Add Your Photos to Our Album &rarr;</a>
+            <p>The same album as the QR code on your table.</p>
+          </div>
+        </section>
+
+        <nav class="info-links" aria-label="Wedding info quick links">
+          <a href="index.html#details">Venue &amp; Details</a>
+          <a href="index.html#travel">Travel &amp; Parking</a>
+          <a href="index.html">Main Site</a>
+        </nav>
+
+        <div class="program-phase">
+          <h2 class="phase-label">Ceremony</h2>
+          <ul class="program-list">
+            <li class="program-item reveal" data-start="2027-06-12T16:00:00-04:00">
+              <div class="program-time">4:00 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Doors Open</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+            <li class="program-item reveal" data-start="2027-06-12T16:30:00-04:00">
+              <div class="program-time">4:30 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Ceremony</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="program-phase">
+          <h2 class="phase-label">Cocktail Hour</h2>
+          <ul class="program-list">
+            <li class="program-item reveal" data-start="2027-06-12T17:00:00-04:00">
+              <div class="program-time">5:00 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Cocktail Hour</h3>
+                  <span class="program-now">Now</span>
+                </div>
+                <p class="program-note">{{Optional note, e.g. a link to a game or the menu}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="program-phase">
+          <h2 class="phase-label">Reception</h2>
+          <ul class="program-list">
+            <li class="program-item reveal" data-start="2027-06-12T18:15:00-04:00">
+              <div class="program-time">6:15 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Grand Entrance</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+            <li class="program-item reveal" data-start="2027-06-12T19:00:00-04:00">
+              <div class="program-time">7:00 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Dinner</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+            <li class="program-item reveal" data-start="2027-06-12T20:00:00-04:00">
+              <div class="program-time">8:00 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Speeches</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+            <li class="program-item reveal" data-start="2027-06-12T21:00:00-04:00">
+              <div class="program-time">9:00 PM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Dancing</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+            <li class="program-item reveal" data-start="2027-06-13T00:00:00-04:00">
+              <div class="program-time">12:00 AM</div>
+              <div class="program-content">
+                <div class="program-title-row">
+                  <h3 class="program-title">Send-off</h3>
+                  <span class="program-now">Now</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <p class="program-closing">Thank you for celebrating with us!</p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- include: footer -->
+
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/day-of.js" defer></script>
+</body>
+</html>

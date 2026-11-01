@@ -1,0 +1,70 @@
+<!--
+  Wedding party: two featured cards (e.g. maid/man of honor and best man),
+  then a grid for everyone else. Paste into our-story.html after the
+  timeline section (or anywhere on index.html); the styles are already in
+  photos.css. Photos go in images/; portrait (3:4) crops look best.
+
+  Placeholder cards (bp-card--placeholder) hold a spot while you wait for
+  names and photos. Remove them before launch rather than leaving "Coming
+  Soon" up.
+
+  Everyone on this page is named on a site anyone with the address can
+  read. Ask each person before you add their photo and a line about them.
+-->
+
+  <!-- ===== WEDDING PARTY ===== -->
+  <section class="bp-section section-pad">
+    <div class="container">
+      <p class="section-eyebrow reveal">The Wedding Party</p>
+      <h2 class="section-title reveal">{{Maid of Honor &amp; Best Man}}</h2>
+
+      <div class="bp-featured-grid">
+        <div class="bp-card reveal">
+          <div class="bp-img-wrap">
+            <img src="images/party-1.jpg" alt="{{Name}}" loading="lazy" />
+          </div>
+          <div class="bp-info">
+            <span class="bp-role">{{Maid of Honor}}</span>
+            <h3 class="bp-name">{{Name}}</h3>
+            <p class="bp-relation">{{Partner One's best friend}}</p>
+            <p class="bp-bio">{{Two sentences about them.}}</p>
+          </div>
+        </div>
+        <div class="bp-card reveal">
+          <div class="bp-img-wrap">
+            <img src="images/party-2.jpg" alt="{{Name}}" loading="lazy" />
+          </div>
+          <div class="bp-info">
+            <span class="bp-role">{{Best Man}}</span>
+            <h3 class="bp-name">{{Name}}</h3>
+            <p class="bp-relation">{{Partner Two's brother}}</p>
+            <p class="bp-bio">{{Two sentences about them.}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-group-header reveal">
+        <p class="section-eyebrow">{{Partner One's Side}}</p>
+        <h2 class="section-title">{{Bridesmaids}}</h2>
+      </div>
+      <div class="bp-grid">
+        <div class="bp-card reveal">
+          <div class="bp-img-wrap">
+            <img src="images/party-3.jpg" alt="{{Name}}" loading="lazy" />
+          </div>
+          <div class="bp-info">
+            <span class="bp-role">{{Bridesmaid}}</span>
+            <h3 class="bp-name">{{Name}}</h3>
+          </div>
+        </div>
+        <div class="bp-card bp-card--placeholder reveal">
+          <div class="bp-placeholder-img"></div>
+          <div class="bp-info">
+            <span class="bp-role">{{Bridesmaid}}</span>
+            <h3 class="bp-name">Coming Soon</h3>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>

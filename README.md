@@ -98,8 +98,9 @@ and mobile nav.
 ## What's intentionally not included
 
 Couple-specific content has `{{placeholders}}` in `index.html` instead of
-invented details. A photo gallery, Our Story page, day-of program, and
-menu are not part of this fork.
+invented details. A photo gallery, Our Story page, day-of program, menu,
+gift options, and a thank-you page are starters in `examples/`. They are
+not on the site until copied in.
 
 ## License
 

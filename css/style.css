@@ -375,7 +375,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   );
 }
 
-.hero-content {
+.hero-content,
+.page-hero-content {
   position: relative;
   text-align: center;
   padding: 0 1.5rem;
@@ -691,12 +692,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .rsvp-section .section-title { color: var(--white); }
 .rsvp-section .section-body  { color: rgba(255,255,255,0.85); }
 
-/* RSVP is its own page. The block fills the first screen under the fixed nav. */
+/* RSVP page. Top padding clears the fixed nav. The iframe height is the
+   one Google measured for this form. */
 .rsvp-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 7rem 0 4rem;
   box-sizing: border-box;
 }
@@ -715,8 +714,43 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: var(--white);
 }
 @media (max-width: 700px) {
-  .rsvp-form { height: 1200px; }
+  .rsvp-form { height: 1400px; }
 }
+
+/* Sub-page hero used by the starters in examples/ (day-of, Our Story). */
+.page-hero {
+  position: relative;
+  min-height: max(42vh, 320px);
+  padding: 6rem 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-dark);
+  overflow: hidden;
+}
+.page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 60%, rgba(var(--accent-rgb), 0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(var(--primary-rgb), 0.25) 0%, transparent 50%);
+}
+.page-hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+}
+.page-hero-sub {
+  font-size: 0.82rem;
+  letter-spacing: var(--ls-btn);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+}
+.page-hero .countdown-grid { margin-top: 2rem; gap: clamp(0.75rem, 4vw, 3rem); flex-wrap: nowrap; }
+.page-hero .countdown-block { min-width: 56px; }
+.page-hero .countdown-num { font-size: clamp(2rem, 4vw, 3.5rem); }
 
 /* "Add to calendar" links under a details card */
 .calendar-links { margin-top: 0.9rem; font-size: 0.85rem; color: var(--muted); }
@@ -755,6 +789,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   from { opacity: 0; transform: translateY(16px) scale(0.95); }
   to   { opacity: 1; transform: none; }
 }
+
+/* Thank-you section, for examples/after-the-wedding when that page is copied in. */
+.thanks-section { text-align: center; }
+.thanks-section .section-body a { color: var(--primary-dark); text-decoration: underline; text-underline-offset: 2px; }
+.thanks-sig { font-family: var(--font-script); font-size: 1.8rem; color: var(--accent); margin-top: 1.25rem; }
 
 /* =============================================
    FOOTER

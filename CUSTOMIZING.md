@@ -118,9 +118,11 @@ it should ask for the code.
 
 Any page with the `<!-- include: password-gate -->` line and `js/config.js`
 plus `js/main.js` is behind the same code. A guest who unlocked one page
-has unlocked them all. A page without the block is public. For another
-event with its own countdown and calendar file, see "Other events" above.
-This page has no guest list.
+has unlocked them all. A page without the block is public. Starters for
+a gallery, gifts, a day-of program, a menu, and a thank-you are in
+`examples/`. Copy one in only when someone asks. For another event with
+its own countdown and calendar file, see "Other events" above. This page
+has no guest list.
 
 Photos go in `images/`.
 

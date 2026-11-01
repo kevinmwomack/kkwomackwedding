@@ -15,7 +15,7 @@ One password-gated invitation page. Wedding facts live on the site. Guest respon
 - `js/config.js` stays gitignored and is injected as the `SITE_CONFIG_JS` secret. Do not commit it. There is no `GUESTS_JS` secret and no `js/guests.js`. Do not add them. Do not deploy an Apps Script.
 - The on-site RSVP engine, the guest-list files, the welcome card, the personal-invitation card generator, and the tests that only covered those are already gone. Do not rebuild them.
 - Keep the password gate and the build checks that protect it, including the refusal to publish the example password `ChangeMe123`. A section with `id="rsvp"` fails the build.
-- Gallery, gifts, day-of, and thank-you pages are not in this repo. Do not restore an `examples/` directory to copy them from.
+- Gallery, gifts, day-of, a photo short link, and a thank-you page live in `examples/` and are not wired in. Copy one in only when someone asks for it. The gifts starter is the place a PayPal cash-gift link would go. Do not add a guest list to satisfy notes in that folder.
 - Real names, date, venue, schedule, dress code, travel, registry, palette, hero photo, and the favicon wait until copy is ready.
 
 ## How this template actually works
@@ -124,7 +124,7 @@ Use `main` for the site. Use `github.io` until a domain is purchased, then attac
 
 **Tests that match the site we are keeping.** The suite does not drive an on-site RSVP form, a guest list, a welcome card, an Apps Script, personal invitation cards, or pages copied out of `examples/`. Keep the journeys that protect the password gate and the build: the code must not appear in published files, the example password must be refused, a gate with no password must fail, and `id="rsvp"` must fail.
 
-`examples/` is not in this repo. A gallery or a day-of page, if one is wanted later, is new work on the live pages.
+`examples/` holds starters that are not on the site: a gallery, Our Story, wedding party, gifts, a day-of program, a menu, a public photo redirect, and a thank-you. Copy one in only when someone asks. The test suite does not install them.
 
 ## Implementation steps
 
@@ -140,6 +140,8 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [ ] **Guest-facing Google Form,** outside GitHub. Settings from the Google Forms section above. `rsvp.html` currently embeds the tester form through `RSVP_FORM_URL`. Swap that URL for the guest-facing form, then check the iframe on a phone.
 
+- [ ] **Cash gifts via PayPal.** Look at a PayPal link guests can use for a cash gift. The layout to start from is `examples/gifts/`: a card for ways to send money next to a registry card. A PayPal.me link is a public handle, in the same category as the Venmo handle already sketched there. Do not publish a bank account number. The gate does not hide it. Wiring this in is a later change, after the couple decides the link and whether the registry stays.
+
 - [ ] **Design and guest-facing copy,** in a later session. Names, date, venue, schedule, travel, palette, photos, favicon, and the real embed URL.
 
 - [ ] **Custom domain,** when one is purchased. Follow the custom-domain section. The only code change is `SITE_URL`.
@@ -147,6 +149,7 @@ Check these off in `PLAN.md` as each commit lands.
 ## Still open, and only these
 
 - The invitation copy: names, date and time with timezone, venue and address, schedule, dress code, travel, registry (keep or remove), contact, hashtag, initials.
+- A PayPal link for cash gifts, and whether it replaces or sits beside a registry. Start from `examples/gifts/`. Do not publish a bank account number.
 - The shared password phrase.
 - The real form’s embed URL. The tester form is not the guest-facing form.
 - Whether to buy a domain before invitations go out, or launch on `github.io` first.

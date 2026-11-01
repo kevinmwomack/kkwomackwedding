@@ -1,0 +1,54 @@
+<!--
+  Registry + gift options: two cards side by side (one per column on a
+  phone). The left card lists ways to send money, the right one links the
+  registry. Replace the REGISTRY section in index.html with this, and add
+  the styles from gifts.css to the end of css/style.css (or copy it to
+  css/gifts.css and link it after style.css).
+
+  Everything here is readable by anyone who has the site's address, gate
+  or no gate (see SECURITY.md). Payment handles are usually fine; bank
+  account numbers are not. For anything you'd rather not publish, say
+  "Contact us for details" and link your email or WhatsApp.
+
+  Guests from other countries may not have the apps you use: ask the couple
+  whether to add an option that works where those guests live (a bank
+  transfer, a mobile-money number).
+-->
+
+  <!-- ===== REGISTRY / GIFTS ===== -->
+  <section id="registry" class="registry-section section-pad">
+    <div class="container">
+      <p class="section-eyebrow reveal">Gifts</p>
+      <h2 class="section-title reveal">With Love</h2>
+      <p class="section-body reveal">{{Your presence is the greatest gift of all. If you'd like to celebrate with a gift, a contribution toward our future or something from our registry would be deeply cherished.}}</p>
+
+      <div class="gifts-grid reveal">
+
+        <div class="gift-block">
+          <h3>A Gift Towards Our Future</h3>
+          <p>Use whichever method works best for you.</p>
+          <ul class="gift-option-list">
+            <li class="gift-option">
+              <span class="gift-option-label">{{Venmo}}</span>
+              <a href="{{https://venmo.com/handle}}" class="gift-option-tag" target="_blank" rel="noopener noreferrer">{{@handle}}</a>
+            </li>
+            <li class="gift-option">
+              <span class="gift-option-label">{{Zelle}}</span>
+              <span class="gift-option-tag">{{Our phone number or email}}</span>
+            </li>
+            <li class="gift-option">
+              <span class="gift-option-label">{{Bank transfer (abroad)}}</span>
+              <a href="mailto:" data-href-field="contactEmail" class="gift-option-tag">Contact us for details</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="gift-block">
+          <h3>Registry</h3>
+          <p>{{What's on it, and that items ship straight to you, so nobody travels with a gift.}}</p>
+          <a href="{{https://registry link}}" class="registry-btn" target="_blank" rel="noopener noreferrer">View Registry</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
