@@ -137,9 +137,58 @@
     <div class="container container--narrow">
       <p class="section-eyebrow reveal">With Love</p>
       <h2 class="section-title reveal">Registry</h2>
-      <p class="section-body reveal">{{Registry intro copy, e.g. "Your presence is the greatest gift, but if you'd like to give one..."}}</p>
-      <!-- TODO: add a registry button, e.g.
-           <a href="https://..." class="registry-btn" target="_blank" rel="noopener noreferrer">View Registry</a> -->
+      <p class="section-body reveal">The venue will not have a place to store gifts. However, you can contribute to our honeymoon vacation, the down payment on our first home, or our next date night by scanning one of the QR codes below!</p>
+      <details class="gift-reveal reveal">
+        <summary class="registry-btn">Gift Now</summary>
+        <p class="gift-hint">Tap or click a logo to turn the tile over and reveal our personal QR code.</p>
+        <!-- Back faces stay empty until the QR files named in PLAN.md are placed here. -->
+        <ul class="gift-logo-row">
+          <li>
+            <button type="button" class="gift-tile" data-gift="Zelle" aria-pressed="false" aria-label="Zelle. Show the QR code.">
+              <span class="gift-flip">
+                <span class="gift-face gift-face-front">
+                  <img src="images/gifts/zelle.png" alt="">
+                  <span class="gift-name">Zelle</span>
+                </span>
+                <span class="gift-face gift-face-back"></span>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="gift-tile" data-gift="PayPal" aria-pressed="false" aria-label="PayPal. Show the QR code.">
+              <span class="gift-flip">
+                <span class="gift-face gift-face-front">
+                  <img src="images/gifts/paypal.png" alt="">
+                  <span class="gift-name">PayPal</span>
+                </span>
+                <span class="gift-face gift-face-back"></span>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="gift-tile" data-gift="Venmo" aria-pressed="false" aria-label="Venmo. Show the QR code.">
+              <span class="gift-flip">
+                <span class="gift-face gift-face-front">
+                  <img src="images/gifts/venmo.png" alt="">
+                  <span class="gift-name">Venmo</span>
+                </span>
+                <span class="gift-face gift-face-back"></span>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="gift-tile" data-gift="Cash App" aria-pressed="false" aria-label="Cash App. Show the QR code.">
+              <span class="gift-flip">
+                <span class="gift-face gift-face-front">
+                  <img src="images/gifts/cash-app.png" alt="">
+                  <span class="gift-name">Cash App</span>
+                </span>
+                <span class="gift-face gift-face-back"></span>
+              </span>
+            </button>
+          </li>
+        </ul>
+      </details>
     </div>
   </section>
 

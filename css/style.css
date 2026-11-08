@@ -610,6 +610,89 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .registry-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
+/* Gift Now opens the cash-gift logos. The summary is the button. */
+.gift-reveal { width: 100%; }
+.gift-reveal > summary {
+  list-style: none;
+  cursor: pointer;
+  margin-inline: auto;
+}
+.gift-reveal > summary::-webkit-details-marker { display: none; }
+.gift-reveal[open] > summary { margin-bottom: 1.75rem; }
+
+.gift-hint {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.gift-logo-row {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.gift-tile {
+  appearance: none;
+  width: 100%;
+  height: 8.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  perspective: 900px;
+}
+.gift-flip {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s ease;
+}
+.gift-tile.is-flipped .gift-flip { transform: rotateY(180deg); }
+.gift-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 0.75rem;
+  background: var(--white);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.gift-face-back { transform: rotateY(180deg); }
+.gift-face-front img {
+  display: block;
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+}
+.gift-name {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.gift-tile:hover .gift-face-front,
+.gift-tile:focus-visible .gift-face-front {
+  border-color: var(--primary);
+}
+@media (max-width: 600px) {
+  .gift-logo-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* =============================================
    TRAVEL
    ============================================= */

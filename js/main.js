@@ -445,6 +445,25 @@ function initReveal() {
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 
+// Gift tiles turn over to a QR code. The back stays empty until that image
+// is added. Missing tiles are a no-op, so other pages still boot.
+function initGiftTiles() {
+  document.querySelectorAll('.gift-tile').forEach(btn => {
+    const name = btn.getAttribute('data-gift') || 'Gift';
+    const setSide = (flipped) => {
+      btn.classList.toggle('is-flipped', flipped);
+      btn.setAttribute('aria-pressed', flipped ? 'true' : 'false');
+      btn.setAttribute('aria-label', flipped
+        ? name + '. Hide the QR code.'
+        : name + '. Show the QR code.');
+    };
+    setSide(btn.classList.contains('is-flipped'));
+    btn.addEventListener('click', () => {
+      setSide(!btn.classList.contains('is-flipped'));
+    });
+  });
+}
+
 // ---------------------------------------------------------------------------
 // BOOT
 // ---------------------------------------------------------------------------
@@ -460,4 +479,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initRsvpForm();
   initDayOfButton();
   initCalendarLinks();
+  initGiftTiles();
 });

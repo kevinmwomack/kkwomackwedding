@@ -142,6 +142,8 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [ ] **Cash gifts via PayPal.** Look at a PayPal link guests can use for a cash gift. The layout to start from is `examples/gifts/`: a card for ways to send money next to a registry card. A PayPal.me link is a public handle, in the same category as the Venmo handle already sketched there. Do not publish a bank account number. The gate does not hide it. Wiring this in is a later change, after the couple decides the link and whether the registry stays.
 
+- [ ] **QR codes on the gift tiles.** The Registry tiles flip, and each back face is blank. Add `images/gifts/zelle-qr.png`, `paypal-qr.png`, `venmo-qr.png`, and `cash-app-qr.png`, then place each image inside that tile's `.gift-face-back`. Leave the hint sentence as it is. Do not publish a bank account number. The gate does not hide the image.
+
 - [ ] **Design and guest-facing copy,** in a later session. Names, date, venue, schedule, travel, palette, photos, favicon, and the real embed URL.
 
 - [ ] **Custom domain,** when one is purchased. Follow the custom-domain section. The only code change is `SITE_URL`.
@@ -150,6 +152,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 - The invitation copy still open: names, venue and address, schedule, dress code, travel, registry (keep or remove), hashtag, initials, and a confirmed clock time and timezone. The calendar day and the contact email are already in gitignored `js/config.js` and `SITE_CONFIG_JS`. Do not copy them into this file, and do not put the template placeholders back.
 - A PayPal link for cash gifts, and whether it replaces or sits beside a registry. Start from `examples/gifts/`. Do not publish a bank account number.
+- QR images for the four Registry tiles. The backs stay blank until `images/gifts/zelle-qr.png`, `paypal-qr.png`, `venmo-qr.png`, and `cash-app-qr.png` are shown on each `.gift-face-back`.
 - The shared password phrase.
 - The real form’s embed URL. The tester form is not the guest-facing form.
 - Whether to buy a domain before invitations go out, or launch on `github.io` first.
