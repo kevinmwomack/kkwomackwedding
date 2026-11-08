@@ -16,7 +16,7 @@ One password-gated invitation page. Wedding facts live on the site. Guest respon
 - The on-site RSVP engine, the guest-list files, the welcome card, the personal-invitation card generator, and the tests that only covered those are already gone. Do not rebuild them.
 - Keep the password gate and the build checks that protect it, including the refusal to publish the example password `ChangeMe123`. A section with `id="rsvp"` fails the build.
 - Gallery, gifts, day-of, a photo short link, and a thank-you page live in `examples/` and are not wired in. Copy one in only when someone asks for it. The gifts starter is the place a PayPal cash-gift link would go. Do not add a guest list to satisfy notes in that folder.
-- Real names, date, venue, schedule, dress code, travel, registry, palette, hero photo, and the favicon wait until copy is ready.
+- Real names, venue, schedule, dress code, travel, registry, palette, hero photo, and the favicon wait until copy is ready. The calendar day and the contact email are already in gitignored `js/config.js`. Keep them there and in `SITE_CONFIG_JS`. The clock time and timezone are still the template default until the couple confirms them.
 
 ## How this template actually works
 
@@ -24,7 +24,7 @@ Checked against the template, then updated for this fork.
 
 - GitHub Pages runs `.github/workflows/deploy.yml` on push to `main` (and on a manual run). It builds `_site/` and publishes only that folder. The workflow runs only when the repo is not still marked as a template. Without `SITE_CONFIG_JS` it skips the deploy with a warning.
 - This site is not built by Jekyll. `setup/build.js` produces `_site/`, and the workflow publishes that folder. An empty `.nojekyll` at the repo root is copied into `_site/` so Pages does not run Jekyll on the artifact.
-- GitHub never shows a saved Actions secret. The pencil on `SITE_CONFIG_JS` opens a blank box even when the secret is set. The blank box does not mean the secret is empty. Saving that form without pasting a complete new `js/config.js` replaces the working secret with nothing, and the next build skips. Edit the local file, check it with `npm start`, paste the whole file into the secret, then re-run the workflow.
+- GitHub never shows a saved Actions secret. The pencil on `SITE_CONFIG_JS` opens a blank box even when the secret is set. The blank box does not mean the secret is empty. Saving that form without pasting a complete new `js/config.js` replaces the working secret with nothing, and the next build skips. Edit the local file, check it with `npm start`, paste the whole file into the secret, then re-run the workflow. A push to `main` does not refresh the secret: a green deploy can ship new HTML and the wedding facts from the secret that was already stored. `AGENTS.md` tells later sessions to run `gh secret set SITE_CONFIG_JS < js/config.js` and re-run the workflow after every config edit. Do not copy the password or the filled-in facts into this file.
 - The build turns `SITE_PASSWORD` into a PBKDF2 check (`AUTH.salt`, `AUTH.iterations`, `AUTH.check`, 310,000 iterations by default) and fails if the plaintext code appears in the output. The browser stores the derived key in `localStorage` under `wedding_key`. There is no `VALID_HASHES` list and no `sessionStorage` unlock.
 - The gate is a courtesy. The HTML is readable without the code. Do not put a home address or a gift-account number in the page.
 - The directions link is already built from `VENUE_NAME` plus `VENUE_ADDRESS`. `data-field` only sets text. An iframe `src` needs its own assignment and must not go through `innerHTML`.
@@ -148,7 +148,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 ## Still open, and only these
 
-- The invitation copy: names, date and time with timezone, venue and address, schedule, dress code, travel, registry (keep or remove), contact, hashtag, initials.
+- The invitation copy still open: names, venue and address, schedule, dress code, travel, registry (keep or remove), hashtag, initials, and a confirmed clock time and timezone. The calendar day and the contact email are already in gitignored `js/config.js` and `SITE_CONFIG_JS`. Do not copy them into this file, and do not put the template placeholders back.
 - A PayPal link for cash gifts, and whether it replaces or sits beside a registry. Start from `examples/gifts/`. Do not publish a bank account number.
 - The shared password phrase.
 - The real form’s embed URL. The tester form is not the guest-facing form.

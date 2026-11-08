@@ -97,6 +97,14 @@ gate: anyone with the form link can submit.
 - **The example password fails the build.** `ChangeMe123` stays in
   `js/config.example.js`. A preview or a deploy uses a different password
   in gitignored `js/config.js` and in the `SITE_CONFIG_JS` secret.
+- **A push does not update live wedding facts.** `js/config.js` is
+  gitignored, and the workflow builds from the `SITE_CONFIG_JS` secret.
+  After any edit to that file, replace the secret with the whole file
+  (`gh secret set SITE_CONFIG_JS < js/config.js`) and re-run Deploy to
+  GitHub Pages. A green deploy of a commit republishes the committed
+  files with the secret already stored. Do not put the password or the
+  filled-in facts in docs, commits, or issues. Leave
+  `js/config.example.js` as the placeholder.
 - **`id="rsvp"` fails the build** on this fork. The form section is
   `#rsvp-coming` on `rsvp.html`. The iframe `src` comes from
   `RSVP_FORM_URL` and stays an id other than `rsvp`.
