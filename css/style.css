@@ -530,6 +530,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   box-shadow: var(--shadow);
   transition: transform var(--transition), box-shadow var(--transition);
 }
+#dress-code { scroll-margin-top: 6rem; }
 .detail-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
 .detail-icon {
@@ -670,6 +671,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .faq-item p a { color: var(--primary-dark); text-decoration: underline; }
 .faq-item p a:hover { color: var(--primary); }
+
+.faq-image {
+  margin: 0 0 0.85rem;
+  max-width: min(414px, 100%);
+  height: auto;
+}
+.faq-item > .faq-image:last-child { margin-bottom: 1.25rem; }
+.faq-item strong { font-weight: 700; }
 
 /* =============================================
    RSVP
