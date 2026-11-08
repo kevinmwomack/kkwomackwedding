@@ -37,6 +37,7 @@
       <ul class="nav-links" id="nav-links">
         <li><a href="#details">The Wedding</a></li>
         <li><a href="#travel">Travel</a></li>
+        <li><a href="what-to-wear.html">What to Wear</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a href="rsvp.html" class="nav-cta">RSVP</a></li>
       </ul>
@@ -95,12 +96,12 @@
 
         <div class="detail-card reveal">
           <div class="detail-icon">&#9670;</div>
-          <h3>Ceremony</h3>
+          <h3>Night-Before Cocktail Hour</h3>
           <p class="detail-time" data-field="weddingDateDisplay">{{Wedding Date}}</p>
           <p class="detail-venue" data-field="venueName">{{Venue Name}}</p>
           <div class="event-schedule">
-            <div class="event-row"><span>{{Time}}</span><span>Doors Open</span></div>
-            <div class="event-row"><span>{{Time}}</span><span>Ceremony Begins</span></div>
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
           </div>
           <a href="#" data-href-field="map" class="detail-link" target="_blank" rel="noopener">Get Directions</a>
           <p class="calendar-links">Add to calendar:
@@ -111,21 +112,34 @@
 
         <div class="detail-card reveal">
           <div class="detail-icon">&#9670;</div>
-          <h3>Reception</h3>
+          <h3>Ceremony &amp; Reception</h3>
           <p class="detail-time" data-field="weddingDateDisplay">{{Wedding Date}}</p>
           <p class="detail-venue" data-field="venueName">{{Venue Name}}</p>
           <div class="event-schedule">
-            <div class="event-row"><span>{{Time}}</span><span>Cocktail Hour</span></div>
-            <div class="event-row"><span>{{Time}}</span><span>Reception Begins</span></div>
-            <div class="event-row"><span>{{Time}}</span><span>Last Dance</span></div>
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
           </div>
+          <a href="#" data-href-field="map" class="detail-link" target="_blank" rel="noopener">Get Directions</a>
+          <p class="calendar-links">Add to calendar:
+            <a href="wedding.ics">Apple / Outlook</a> &middot;
+            <a href="#" data-google-calendar="wedding" target="_blank" rel="noopener">Google</a>
+          </p>
         </div>
 
-        <div class="detail-card reveal" id="dress-code">
+        <div class="detail-card reveal">
           <div class="detail-icon">&#9670;</div>
-          <h3>Dress Code</h3>
-          <p class="detail-time" data-field="dressCode">{{Dress Code}}</p>
-          <p class="detail-desc">{{Dress code description for guests.}}</p>
+          <h3>Activate Games Party</h3>
+          <p class="detail-time" data-field="weddingDateDisplay">{{Wedding Date}}</p>
+          <p class="detail-venue" data-field="venueName">{{Venue Name}}</p>
+          <div class="event-schedule">
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
+            <div class="event-row"><span>{{Time}}</span><span>{{Schedule item}}</span></div>
+          </div>
+          <a href="#" data-href-field="map" class="detail-link" target="_blank" rel="noopener">Get Directions</a>
+          <p class="calendar-links">Add to calendar:
+            <a href="wedding.ics">Apple / Outlook</a> &middot;
+            <a href="#" data-google-calendar="wedding" target="_blank" rel="noopener">Google</a>
+          </p>
         </div>
 
       </div>
@@ -209,10 +223,6 @@
           <a href="{{hotel booking link}}" class="travel-link" target="_blank" rel="noopener">Book a Room</a>
         </div>
         <div class="travel-card reveal">
-          <h3>Parking</h3>
-          <p>{{Parking info, if relevant}}</p>
-        </div>
-        <div class="travel-card reveal">
           <h3>Things to Do</h3>
           <p>{{A few favorite places nearby, for guests making a trip of it}}</p>
         </div>
@@ -232,7 +242,7 @@
         </details>
         <details class="faq-item reveal">
           <summary>What should I wear?</summary>
-          <p>Please refer to the <a href="#dress-code">section above</a> for dress code guidelines, and remember to have fun with it!</p>
+          <p>Please refer to the <a href="what-to-wear.html">What to Wear page</a> for dress code guidelines, and remember to have fun with it!</p>
         </details>
         <details class="faq-item reveal">
           <summary>Can I change my RSVP?</summary>

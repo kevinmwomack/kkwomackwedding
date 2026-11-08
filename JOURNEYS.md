@@ -85,13 +85,13 @@ built from the address.
 
 | Journey |
 |---|
-| Accessibility: no axe violations on the home page or the RSVP page |
+| Accessibility: no axe violations on the home page, the RSVP page, or What to Wear |
 | Phones: buttons and links are big enough to tap (44px) |
 | Reduced motion: everything is visible straight away, nothing animates |
 | Links, images and guest-facing copy |
 
-The accessibility and tap-target journeys open `index.html` and
-`rsvp.html`. Links inside a sentence are exempt from the 44px check.
+The accessibility and tap-target journeys open `index.html`,
+`rsvp.html`, and `what-to-wear.html`. Links inside a sentence are exempt from the 44px check.
 The copy journey checks `rel="noopener"` on new-tab links, `alt` on
 images, `lang`, and `noindex`.
 

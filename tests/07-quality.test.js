@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { journey, check, makeSite, config, serve, newDevice, PASSWORD } = require('./lib');
 
-const PAGES = ['', 'rsvp.html'];
+const PAGES = ['', 'rsvp.html', 'what-to-wear.html'];
 
 let srv;
 async function qualitySite() {
@@ -27,13 +27,14 @@ async function axe(page) {
     .violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')}`));
 }
 
-journey('Accessibility: no axe violations on the home page or the RSVP page', async () => {
+journey('Accessibility: no axe violations on the home page, the RSVP page, or What to Wear', async () => {
   const { url } = await qualitySite();
   const pw = new URLSearchParams({ pw: PASSWORD });
   const states = [
     ['gate', url, null],
     ['home', `${url}?${pw}`, null],
     ['rsvp', `${url}rsvp.html?${pw}`, null],
+    ['wear', `${url}what-to-wear.html?${pw}`, null],
   ];
   const problems = [];
   for (const [label, u, steps] of states) {

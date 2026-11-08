@@ -84,7 +84,7 @@ journey('Couple strips the page down: no countdown, travel, registry or FAQ', as
 journey('Couple shows a new fact anywhere with data-field', async () => {
   const site = makeSite('choice-data-field', {
     config: config({ BRUNCH_TIME: '11:30 AM' }),
-    edit: dir => editFile(path.join(dir, 'index.html'), h => h.replace('<h3>Ceremony</h3>', '<h3>Ceremony</h3><p id="brunch" data-field="BRUNCH_TIME">{{time}}</p>')),
+    edit: dir => editFile(path.join(dir, 'index.html'), h => h.replace('<h3>Night-Before Cocktail Hour</h3>', '<h3>Night-Before Cocktail Hour</h3><p id="brunch" data-field="BRUNCH_TIME">{{time}}</p>')),
   });
   await withSite(site, async url => {
     const page = await newDevice();

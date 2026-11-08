@@ -530,7 +530,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   box-shadow: var(--shadow);
   transition: transform var(--transition), box-shadow var(--transition);
 }
-#dress-code { scroll-margin-top: 6rem; }
 .detail-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
 .detail-icon {
