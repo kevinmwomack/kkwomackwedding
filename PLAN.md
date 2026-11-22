@@ -103,8 +103,55 @@ Order:
    - `2606:50c0:8003::153`
 4. For `www`, one `CNAME` to `<username>.github.io`. Do not point `www` at the bare domain. That breaks HTTPS.
 5. Configure both names. The one entered in Pages is the address guests use. GitHub redirects the other one to it.
-6. After the DNS check passes, turn on **Enforce HTTPS**. The certificate can take up to an hour. Extra `A`, `AAAA`, or `CNAME` records can block it. If the domain uses CAA records, one of them must allow Let’s Encrypt.
+6. After the DNS check passes, turn on **Enforce HTTPS**. The certificate can take up to an hour, and the checkbox can take up to 24 hours to become available. A greyed-out box after an hour is slow, not necessarily broken. Extra `A`, `AAAA`, or `CNAME` records can block it. If the domain uses CAA records, one of them must allow Let’s Encrypt.
 7. Put the final address in `SITE_URL`, update the `SITE_CONFIG_JS` secret, and re-run the workflow. Do this before printing anything that contains the address.
+
+Squarespace. A domain registered there can point at this site without a Squarespace website. Squarespace adds a preset named Squarespace Defaults that points the name at Squarespace. Delete that preset before steps 3 and 4. Squarespace’s help does not list the records inside the preset. They use the same hosts as those steps, and extra records on those hosts can block the certificate in step 6. In the domains dashboard: the domain, then DNS, then DNS Settings, then the red trash can next to Squarespace Defaults. Confirm with the account password, or with two-factor authentication if it is on. Add the records above under Custom Records. The host column is labeled Name. Use `@` for each `A` and `AAAA` record. Use `www` for the `CNAME`. A `CNAME` cannot use `@`. Squarespace’s help does not list GitHub’s addresses. Use the values in steps 3 and 4. [DNS records for web hosting](https://support.squarespace.com/hc/en-us/articles/31119879125645-DNS-records-for-web-hosting).
+
+### Notes for the day this step runs
+
+These are working notes from research on 22 November 2026, not settled policy. Remove them, or fold them into `SETUP.md`, once the domain is live and we know what held up. Prices are left out on purpose because they change.
+
+**Before buying**
+
+- Use a `.com`. Avoid `.us`: Squarespace does not offer free WHOIS privacy for it, so the owner’s contact details could be public.
+- At checkout, set the registration term to one year and read the Review Order page before paying. Squarespace’s term selector is only visible after login, and an anonymous cart stored a term value of 3 that Squarespace never explained. Do not assume the first screen means one year.
+- Skip any website plan. A domain alone is allowed. The free-domain offer requires an annual website plan.
+- Leave the Organization field blank. If one is entered, ICANN treats it as the legal owner.
+- Auto-renew is on by default. Squarespace emails 30 days before and charges the card 15 days before the renewal date. If the site is not meant to outlive one year, switch it off in the domains dashboard right after buying. Renewals are not refundable. A full refund exists only within five days of the first purchase.
+- Click the verification link in the registration email. Squarespace suspends the domain if that is not done within 15 days.
+- Registration can show “Registration In Progress” for up to 48 hours, usually about an hour. Wait for it to finish before editing DNS.
+
+**Doing the DNS and GitHub steps**
+
+- Suggested sequence at Squarespace: delete Squarespace Defaults, add the verification `TXT` record from step 1, verify on the GitHub profile, enter the domain under the repo’s Pages settings, then add the `A`, `AAAA`, and `www` `CNAME` records. Squarespace’s pages I read did not show the `TXT` form. Check that `TXT` is in the Type menu under Custom Records, and use the exact name GitHub shows as the Name.
+- Use the four `A` records for the bare domain. Squarespace also offers an `ALIAS` record, but it requires turning DNSSEC off first, so the `A` records are simpler.
+- Do not add a wildcard record (`*`). GitHub warns it invites takeovers.
+- Squarespace asks for the account password or two-factor confirmation on each record change.
+- Keep the `TXT` verification record in place permanently, not only until GitHub says verified.
+- Choose the address guests use before step 2: `www.<domain>` or the bare `<domain>`. GitHub calls `www` the more stable choice because it does not depend on GitHub’s IP addresses. `SITE_URL` must match the name entered in Pages.
+- `SITE_URL` lives in gitignored `js/config.js` and the `SITE_CONFIG_JS` secret. Changing it is not a commit. Run `gh secret set SITE_CONFIG_JS < js/config.js`, then re-run Deploy to GitHub Pages. A green deploy of a commit does not carry the change by itself.
+- Keep the real domain out of committed docs, issues, and PR text. Use `example.com` there.
+- After the domain is attached, the `github.io` address and the custom domain are one deployment. The default host redirects to the custom domain, so use `npm start` for draft checks.
+
+**Test the live domain before anything is printed or sent**
+
+- Both the bare name and `www` load over `https://`, with a padlock and no certificate warning.
+- `curl -sI` on the bare name, `www`, and the old `github.io` address shows the expected redirects. The `github.io` redirect is reported by independent sources but is not promised in GitHub’s docs, so confirm it.
+- The password gate appears, a wrong code is refused, and the right code opens the page. View source and confirm the code does not appear.
+- `rsvp.html` shows the form in the frame. Download a calendar file and confirm it uses the new address.
+- Check on a phone at 320px and 375px wide.
+
+**After the wedding**
+
+- Remove the Custom domain in the repo’s Pages settings, or the DNS records at Squarespace, before the registration lapses. A lapsed name can be registered by someone else and pointed at other content, which matters if printed invitations or QR codes still show it.
+- Keep the `TXT` verification record until then.
+- If the site should stay up for photos, renew the registration deliberately, and check the renewal price in the dashboard next to “Renews on”.
+
+**Gaps in the template docs to fold back in later**
+
+- `SETUP.md` step 5 lists only four `A` records. It leaves out the `AAAA` records and the `TXT` verification that this section lists first. Follow this section, not that list.
+- Neither document covers registrars, the Squarespace Defaults preset, or the live-domain checks above.
 
 A public repo is free. GitHub Pages from a private repo needs a paid plan. The invitation code is not what a public repo would expose, because `js/config.js` is gitignored. The page text would be readable in the repo.
 
@@ -146,7 +193,7 @@ Check these off in `PLAN.md` as each commit lands.
 
 - [ ] **Design and guest-facing copy,** in a later session. Names, date, venue, schedule, travel, palette, photos, favicon, and the real embed URL.
 
-- [ ] **Custom domain,** when one is purchased. Follow the custom-domain section. The only code change is `SITE_URL`.
+- [ ] **Custom domain,** when one is purchased. Follow the custom-domain section and its notes for the day this step runs. No file changes. The only repo-side change is the `SITE_URL` value in gitignored `js/config.js` and the `SITE_CONFIG_JS` secret, followed by a re-run of the deploy.
 
 ## Still open, and only these
 
